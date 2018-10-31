@@ -10,6 +10,7 @@ before_script:
   - ./ci/install_adk.sh $ANDROID_COMPILE_SDK $ANDROID_BUILD_TOOLS $ANDROID_SDK_TOOLS
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
+  - export GRADLE_USER_HOME=`pwd`/.gradle
   
 cache:
   key: one-key-to-rule-them-all
