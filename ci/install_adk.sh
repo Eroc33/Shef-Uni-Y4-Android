@@ -20,7 +20,4 @@ if [ ! -d android-sdk-linux ]; then
 	set +o pipefail
 	yes | android-sdk-linux/tools/bin/sdkmanager --licenses
 	set -o pipefail
-else
-	export ANDROID_HOME=$PWD/android-sdk-linux
-	export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
 fi
