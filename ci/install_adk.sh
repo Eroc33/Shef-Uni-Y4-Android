@@ -15,9 +15,9 @@ if [ ! -d android-sdk-linux ]; then
 	echo y | android-sdk-linux/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" >/dev/null
 	export ANDROID_HOME=$PWD/android-sdk-linux
 	export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
-	chmod +x ./gradlew
 	# temporarily disable checking for EPIPE error and use yes to accept all licenses
 	set +o pipefail
 	yes | android-sdk-linux/tools/bin/sdkmanager --licenses
 	set -o pipefail
 fi
+chmod +x ./gradlew
