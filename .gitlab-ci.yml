@@ -1,4 +1,4 @@
-mage: openjdk:8-jdk
+image: openjdk:8-jdk
 
 variables:
   ANDROID_COMPILE_SDK: "27"
