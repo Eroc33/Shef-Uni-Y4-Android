@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -45,7 +44,7 @@ public class ImageRepository {
 
         externalImages.observeForever( new Observer<List<DiskImage>>() {
             @Override
-            public void onChanged(@Nullable List<DiskImage> internalImages) { ;
+            public void onChanged(@Nullable List<DiskImage> internalImages) {
                 List<DiskImage> allImages = new ArrayList<>();
                 allImages.addAll(internalImages);
                 allImages.addAll(ImageRepository.this.externalImages.getValue());
@@ -76,11 +75,11 @@ public class ImageRepository {
             return;
         }
         //TODO: pass CancellationSignal to query
-        try (Cursor cursor = contentResolver.query(uri, new String[]{MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME}, null, null, null, null)) {
+        try (Cursor cursor = contentResolver.query(uri, new String[]{MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME}, null, null, null, null)) {
             List<DiskImage> newImages = new ArrayList<>(cursor.getCount());
             cursor.moveToNext();
             while (!cursor.isAfterLast()) {
-                newImages.add(new DiskImage(cursor.getString(0), cursor.getString(1)));
+                newImages.add(new DiskImage(cursor.getInt(0), cursor.getString(1), cursor.getString(2), uri));
                 cursor.moveToNext();
             }
             if (uri == MediaStore.Images.Media.INTERNAL_CONTENT_URI) {
@@ -113,6 +112,25 @@ public class ImageRepository {
 
     private void refresh(Uri uri) {
         query(uri);
+    }
+
+    //TODO: make this return a LiveData. Probably involves making ImageContentObserver more generic
+    public DiskImage getImage(Uri storageUri, int id) {
+        //TODO: pass CancellationSignal to query
+        try (Cursor cursor = contentResolver.query(
+                storageUri,
+                new String[]{MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME},
+                "_ID = ?",
+                new String[]{Integer.toString(id)},
+                null,
+                null)) {
+            List<DiskImage> newImages = new ArrayList<>(cursor.getCount());
+            cursor.moveToNext();
+            if (!cursor.isAfterLast()) {
+                return new DiskImage(cursor.getInt(0), cursor.getString(1), cursor.getString(2), storageUri);
+            }
+        }
+        return null;
     }
 
     private static class ImageContentObserver extends ContentObserver {

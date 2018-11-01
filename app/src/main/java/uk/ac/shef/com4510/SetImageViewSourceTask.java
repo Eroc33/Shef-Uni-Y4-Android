@@ -1,43 +1,47 @@
 package uk.ac.shef.com4510;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.ImageView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class SetImageViewSourceTask extends AsyncTask<SetImageViewSourceTask.Parameters, Void, List<GalleryRecyclerViewAdapter.ViewHolder>> {
+public class SetImageViewSourceTask extends AsyncTask<SetImageViewSourceTask.Parameters, Void, SetImageViewSourceTask.Parameters[]> {
 
     @Override
-    protected List<GalleryRecyclerViewAdapter.ViewHolder> doInBackground(Parameters... params) {
-        List<GalleryRecyclerViewAdapter.ViewHolder> holders = new ArrayList<>(params.length);
+    protected SetImageViewSourceTask.Parameters[] doInBackground(Parameters... params) {
         for (Parameters param : params) {
             BitmapFactory.Options opts = new BitmapFactory.Options();
-            if (param.viewHolder.bitmap != null) {
-                opts.inBitmap = param.viewHolder.bitmap;
+            if (param.bitmap != null) {
+                opts.inBitmap = param.bitmap;
             }
-            param.viewHolder.bitmap = BitmapFactory.decodeFile(param.path, opts);
-            holders.add(param.viewHolder);
+            param.bitmap = BitmapFactory.decodeFile(param.path, opts);
         }
-        return holders;
+        return params;
     }
 
     @Override
-    protected void onPostExecute(List<GalleryRecyclerViewAdapter.ViewHolder> readyHolders) {
-        for (GalleryRecyclerViewAdapter.ViewHolder holder : readyHolders) {
-            holder.imageView.setImageBitmap(holder.bitmap);
+    protected void onPostExecute(SetImageViewSourceTask.Parameters[] parameters) {
+        for (SetImageViewSourceTask.Parameters parameter : parameters) {
+            parameter.imageView.setImageBitmap(parameter.bitmap);
+            parameter.postBitmap.consume(parameter.bitmap);
         }
+    }
+
+    public interface BitmapConsumer {
+        void consume(Bitmap bitmap);
     }
 
     public static class Parameters {
-        private GalleryRecyclerViewAdapter.ViewHolder viewHolder;
+        private ImageView imageView;
+        private Bitmap bitmap;
         private String path;
-        private GalleryRecyclerViewAdapter adapter;
+        private BitmapConsumer postBitmap;
 
-        public Parameters(GalleryRecyclerViewAdapter.ViewHolder viewHolder, String path, GalleryRecyclerViewAdapter adapter) {
-            this.viewHolder = viewHolder;
+        public Parameters(ImageView imageView, Bitmap bitmap, String path, BitmapConsumer postBitmap) {
+            this.imageView = imageView;
+            this.bitmap = bitmap;
             this.path = path;
-            this.adapter = adapter;
+            this.postBitmap = postBitmap;
         }
     }
 }
