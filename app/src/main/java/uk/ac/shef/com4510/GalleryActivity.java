@@ -2,6 +2,7 @@ package uk.ac.shef.com4510;
 
 import android.Manifest;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -18,31 +19,25 @@ import java.util.List;
 public class GalleryActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private RecyclerView recyclerView;
-    private ImageRepository imageRepository;
+    private GalleryViewModel viewModel;
     private GalleryRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_gallery);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            return;
+        }else {
+            completeCreation();
         }
-
-        completeCreation();
     }
 
     private void completeCreation() {
+        viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         adapter = new GalleryRecyclerViewAdapter(getApplicationContext());
-        imageRepository = new ImageRepository(getApplication());
-        imageRepository.getAllImages().observe(this, new Observer<List<DiskImage>>() {
-            @Override
-            public void onChanged(@Nullable List<DiskImage> allImages) {
-                adapter.setImages(allImages);
-            }
-        });
-        setContentView(R.layout.activity_gallery);
+        viewModel.getImages().observe(this, allImages -> adapter.setImages(allImages));
         recyclerView = findViewById(R.id.gallery_recycler);
         recyclerView.setAdapter(adapter);
     }
