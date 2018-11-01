@@ -62,7 +62,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
         );
     }
 
-    private void showDetailView(Uri uri, int id) {
+    private void showDetailView(Uri uri, long id) {
         Intent startActivityIntent = new Intent(context, DetailsActivity.class);
         startActivityIntent.putExtra("imageUri", uri);
         startActivityIntent.putExtra("imageId", id);

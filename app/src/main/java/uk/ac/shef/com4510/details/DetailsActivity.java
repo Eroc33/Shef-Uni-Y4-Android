@@ -15,6 +15,7 @@ import uk.ac.shef.com4510.SetImageViewSourceTask;
 public class DetailsActivity extends AppCompatActivity {
     DetailsViewModel viewModel;
     private TextView titleView;
+    private TextView coordsView;
     private ImageView imageView;
     private Bitmap bitmap;
 
@@ -24,9 +25,10 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
         titleView = this.findViewById(R.id.title);
         imageView = this.findViewById(R.id.thumbnail);
+        coordsView = this.findViewById(R.id.coordinates);
 
         Uri uri = getIntent().getParcelableExtra("imageUri");
-        int id = getIntent().getIntExtra("imageId", -1);
+        long id = getIntent().getLongExtra("imageId", -1);
         //TODO: handle case that id is not set (i.e. -1)
         viewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
         viewModel.setStorageUri(uri);
@@ -40,6 +42,7 @@ public class DetailsActivity extends AppCompatActivity {
                             diskImage.getPath(),
                             this::setBitmap)
             );
+            coordsView.setText(String.format("%f,%f", diskImage.getLatitude(), diskImage.getLongitude()));
         });
     }
 

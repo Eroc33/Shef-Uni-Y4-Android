@@ -75,11 +75,17 @@ public class ImageRepository {
             return;
         }
         //TODO: pass CancellationSignal to query
-        try (Cursor cursor = contentResolver.query(uri, new String[]{MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME}, null, null, null, null)) {
+        try (Cursor cursor = contentResolver.query(
+                uri,
+                DiskImage.FIELDS,
+                null,
+                null,
+                null,
+                null)) {
             List<DiskImage> newImages = new ArrayList<>(cursor.getCount());
             cursor.moveToNext();
             while (!cursor.isAfterLast()) {
-                newImages.add(new DiskImage(cursor.getInt(0), cursor.getString(1), cursor.getString(2), uri));
+                newImages.add(new DiskImage(cursor, uri));
                 cursor.moveToNext();
             }
             if (uri == MediaStore.Images.Media.INTERNAL_CONTENT_URI) {
@@ -115,19 +121,19 @@ public class ImageRepository {
     }
 
     //TODO: make this return a LiveData. Probably involves making ImageContentObserver more generic
-    public DiskImage getImage(Uri storageUri, int id) {
+    public DiskImage getImage(Uri storageUri, long id) {
         //TODO: pass CancellationSignal to query
         try (Cursor cursor = contentResolver.query(
                 storageUri,
-                new String[]{MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME},
+                DiskImage.FIELDS,
                 "_ID = ?",
-                new String[]{Integer.toString(id)},
+                new String[]{Long.toString(id)},
                 null,
                 null)) {
             List<DiskImage> newImages = new ArrayList<>(cursor.getCount());
             cursor.moveToNext();
             if (!cursor.isAfterLast()) {
-                return new DiskImage(cursor.getInt(0), cursor.getString(1), cursor.getString(2), storageUri);
+                return new DiskImage(cursor, storageUri);
             }
         }
         return null;

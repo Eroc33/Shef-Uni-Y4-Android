@@ -12,7 +12,7 @@ import uk.ac.shef.com4510.ImageRepository;
 
 public class DetailsViewModel extends AndroidViewModel {
     private Uri storageUri = null;
-    private int id = -1;
+    private long id = -1;
     private ImageRepository imageRepository;
     private MutableLiveData<DiskImage> image;
 
@@ -29,7 +29,7 @@ public class DetailsViewModel extends AndroidViewModel {
         }
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
         if (storageUri != null && id != -1) {
             image.setValue(imageRepository.getImage(storageUri, id));
