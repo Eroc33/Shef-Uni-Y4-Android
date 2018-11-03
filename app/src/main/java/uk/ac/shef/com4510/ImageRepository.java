@@ -2,14 +2,13 @@ package uk.ac.shef.com4510;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -30,7 +29,7 @@ public class ImageRepository {
 
     private final MutableLiveData<List<DiskImage>> externalImages;
     private final MutableLiveData<List<DiskImage>> internalImages;
-    private final MutableLiveData<List<DiskImage>> allImages;
+    private final MediatorLiveData<List<DiskImage>> allImages;
     private final ContentResolver contentResolver;
     private final ContentObserver contentObserver;
 
@@ -40,25 +39,18 @@ public class ImageRepository {
         externalImages.setValue(new ArrayList<>());
         internalImages = new MutableLiveData<>();
         internalImages.setValue(new ArrayList<>());
-        allImages = new MutableLiveData<>();
-
-        externalImages.observeForever( new Observer<List<DiskImage>>() {
-            @Override
-            public void onChanged(@Nullable List<DiskImage> internalImages) {
-                List<DiskImage> allImages = new ArrayList<>();
-                allImages.addAll(internalImages);
-                allImages.addAll(ImageRepository.this.externalImages.getValue());
-                ImageRepository.this.allImages.setValue(allImages);
-            }
+        allImages = new MediatorLiveData<>();
+        allImages.addSource(externalImages, internalImages -> {
+            List<DiskImage> allImages = new ArrayList<>();
+            allImages.addAll(internalImages);
+            allImages.addAll(externalImages.getValue());
+            this.allImages.setValue(allImages);
         });
-        internalImages.observeForever( new Observer<List<DiskImage>>() {
-            @Override
-            public void onChanged(@Nullable List<DiskImage> externalImages) {
-                List<DiskImage> allImages = new ArrayList<>();
-                allImages.addAll(ImageRepository.this.internalImages.getValue());
-                allImages.addAll(externalImages);
-                ImageRepository.this.allImages.setValue(allImages);
-            }
+        allImages.addSource(internalImages, externalImages -> {
+            List<DiskImage> allImages = new ArrayList<>();
+            allImages.addAll(internalImages.getValue());
+            allImages.addAll(externalImages);
+            this.allImages.setValue(allImages);
         });
 
         contentResolver = app.getContentResolver();
