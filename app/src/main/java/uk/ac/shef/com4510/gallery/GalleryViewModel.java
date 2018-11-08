@@ -7,12 +7,13 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import uk.ac.shef.com4510.DiskImage;
 import uk.ac.shef.com4510.ImageRepository;
+import uk.ac.shef.com4510.data.Image;
 
 public class GalleryViewModel extends AndroidViewModel {
-    ImageRepository imageRepository;
-    public LiveData<List<DiskImage>> getImages(){
+    private ImageRepository imageRepository;
+
+    public LiveData<List<Image>> getImages() {
         return imageRepository.getAllImages();
     }
     public GalleryViewModel(@NonNull Application application) {
