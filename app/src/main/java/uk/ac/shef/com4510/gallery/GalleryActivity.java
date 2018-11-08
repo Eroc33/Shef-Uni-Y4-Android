@@ -1,6 +1,7 @@
 package uk.ac.shef.com4510.gallery;
 
 import android.Manifest;
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,11 +16,17 @@ import android.view.View;
 
 import uk.ac.shef.com4510.R;
 
-public class GalleryActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class GalleryActivity
+        extends AppCompatActivity
+        implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    class RequestCode {
+    class PermissionRequestCode {
         static final int READ_EXTERNAL_STORAGE = 101;
         static final int CAMERA = 102;
+    }
+
+    class ActivityResultCode {
+        static final int CAMERA = 201;
     }
 
     private RecyclerView recyclerView;
@@ -34,7 +41,7 @@ public class GalleryActivity extends AppCompatActivity implements ActivityCompat
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    RequestCode.READ_EXTERNAL_STORAGE);
+                    PermissionRequestCode.READ_EXTERNAL_STORAGE);
         } else {
             continueSetup();
         }
@@ -60,7 +67,7 @@ public class GalleryActivity extends AppCompatActivity implements ActivityCompat
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[] {Manifest.permission.CAMERA},
-                    RequestCode.CAMERA);
+                    PermissionRequestCode.CAMERA);
         } else {
             openCamera();
         }
@@ -68,24 +75,35 @@ public class GalleryActivity extends AppCompatActivity implements ActivityCompat
 
     private void openCamera() {
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        startActivity(intent);
+        startActivityForResult(intent, PermissionRequestCode.CAMERA);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults){
         switch (requestCode) {
-            case RequestCode.READ_EXTERNAL_STORAGE: {
+            case PermissionRequestCode.READ_EXTERNAL_STORAGE: {
                 continueSetup();
 
                 break;
             }
 
-            case RequestCode.CAMERA: {
+            case PermissionRequestCode.CAMERA: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     openCamera();
                 }
 
                 break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case ActivityResultCode.CAMERA: {
+                if(resultCode == Activity.RESULT_OK){
+                    // Photo received
+                }
             }
         }
     }
