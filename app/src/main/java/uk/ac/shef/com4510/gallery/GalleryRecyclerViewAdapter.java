@@ -48,6 +48,9 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //TODO: cancel image load task if we rebind a holder while it's loading
         DiskImage image = images.get(position);
+        if(holder.loadTask != null){
+            holder.loadTask.cancel(true);
+        }
         holder.textView.setText(image.getTitle());
         holder.imageView.setImageDrawable(null);
         holder.itemView.setOnClickListener(view -> {
@@ -80,6 +83,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
+        public SetImageViewSourceTask loadTask;
         ImageView imageView;
         TextView textView;
         Bitmap bitmap;
