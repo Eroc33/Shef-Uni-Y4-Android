@@ -1,10 +1,12 @@
 package uk.ac.shef.com4510;
 
+import android.Manifest;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -32,9 +34,11 @@ public class ImageRepository {
     private final MediatorLiveData<List<DiskImage>> allImages;
     private final ContentResolver contentResolver;
     private final ContentObserver contentObserver;
+    private final Application app;
 
 
     public ImageRepository(Application app) {
+        this.app = app;
         externalImages = new MutableLiveData<>();
         externalImages.setValue(new ArrayList<>());
         internalImages = new MutableLiveData<>();
@@ -57,6 +61,10 @@ public class ImageRepository {
         contentObserver = new ImageContentObserver(this);
         setupContentObservers();
         for (Uri uri : storageUris) {
+            if(uri == MediaStore.Images.Media.EXTERNAL_CONTENT_URI &&
+                app.getApplicationContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+                continue;
+            }
             query(uri);
         }
     }
@@ -90,6 +98,10 @@ public class ImageRepository {
 
     private void setupContentObservers() {
         for (Uri uri : storageUris) {
+            if(uri == MediaStore.Images.Media.EXTERNAL_CONTENT_URI &&
+                    app.getApplicationContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+                continue;
+            }
             contentResolver.registerContentObserver(uri, true, contentObserver);
         }
     }
