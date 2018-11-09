@@ -57,6 +57,7 @@ public class GalleryActivity
     }
 
     private void continueSetup() {
+        ImageScannerService.start(getApplicationContext());
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         adapter = new GalleryRecyclerViewAdapter(getApplicationContext());
         viewModel.getImages().observe(this, allImages -> adapter.setImages(allImages));
@@ -83,7 +84,6 @@ public class GalleryActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PermissionRequestCode.READ_EXTERNAL_STORAGE: {
-                ImageScannerService.start(getApplicationContext());
                 continueSetup();
                 break;
             }
