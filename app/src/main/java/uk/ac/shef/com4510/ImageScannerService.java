@@ -79,7 +79,7 @@ public class ImageScannerService extends Service {
     }
 
     private ImageDao getImageDao() {
-        return ((Application) getApplication()).imageDb().imageDao();
+        return ((Application) getApplication()).getImageDb().imageDao();
     }
 
     private void changed(Uri uri) {

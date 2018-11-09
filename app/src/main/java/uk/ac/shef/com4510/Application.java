@@ -5,14 +5,13 @@ import android.arch.persistence.room.Room;
 import uk.ac.shef.com4510.data.ImageDatabase;
 
 public class Application extends android.app.Application {
-    public ImageDatabase imageDb() {
-        return Room.databaseBuilder(getApplicationContext(),
-                ImageDatabase.class, "com4510-image-database").build();
-    }
+    private static ImageDatabase imageDbInstance;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        ImageScannerService.start(getApplicationContext());
+    public synchronized ImageDatabase getImageDb() {
+        if (imageDbInstance == null) {
+            imageDbInstance = Room.databaseBuilder(getApplicationContext(),
+                    ImageDatabase.class, "com4510-image-database").build();
+        }
+        return imageDbInstance;
     }
 }

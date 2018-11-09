@@ -17,10 +17,10 @@ public class ImageRepository {
     }
 
     public LiveData<List<Image>> getAllImages() {
-        return ((uk.ac.shef.com4510.Application) app).imageDb().imageDao().allImages();
+        return ((uk.ac.shef.com4510.Application) app).getImageDb().imageDao().allImages();
     }
 
     public LiveData<Image> getImage(String path) {
-        return ((uk.ac.shef.com4510.Application) app).imageDb().imageDao().getImage(path);
+        return ((uk.ac.shef.com4510.Application) app).getImageDb().imageDao().getImage(path);
     }
 }

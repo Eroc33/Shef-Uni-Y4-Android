@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import uk.ac.shef.com4510.ImageScannerService;
 import uk.ac.shef.com4510.R;
 
 public class GalleryActivity
@@ -82,8 +83,8 @@ public class GalleryActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PermissionRequestCode.READ_EXTERNAL_STORAGE: {
+                ImageScannerService.start(getApplicationContext());
                 continueSetup();
-
                 break;
             }
 
