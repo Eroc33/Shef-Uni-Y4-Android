@@ -37,6 +37,7 @@ public class Image {
         );
     }
 
+    @NonNull
     public String getPath() {
         return path;
     }

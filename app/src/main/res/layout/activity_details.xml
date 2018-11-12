@@ -1,64 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:cardview="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v7.widget.CardView
+    <data>
+
+        <variable
+            name="image"
+            type="uk.ac.shef.com4510.data.Image" />
+
+        <variable
+            name="coordinateFormatter"
+            type="uk.ac.shef.com4510.support.CoordinateFormatter" />
+    </data>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        cardview:cardCornerRadius="2dp"
-        cardview:cardElevation="3dp"
-        cardview:cardUseCompatPadding="true">
+        android:layout_height="match_parent">
 
-        <android.support.constraint.ConstraintLayout
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            cardview:cardCornerRadius="2dp"
+            cardview:cardElevation="3dp"
+            cardview:cardUseCompatPadding="true">
 
-            <ImageView
-                android:id="@+id/thumbnail"
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:contentDescription="@string/selected_image"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter" />
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/thumbnail"
-                android:layout_centerVertical="true"
-                android:maxLines="3"
-                android:padding="8dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:textColor="#444"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                cardview:layout_constraintEnd_toEndOf="parent"
-                cardview:layout_constraintStart_toStartOf="parent"
-                cardview:layout_constraintTop_toBottomOf="@+id/thumbnail" />
+                <ImageView
+                    android:id="@+id/thumbnail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/selected_image"
+                    android:scaleType="fitCenter" />
 
-            <TextView
-                android:id="@+id/coordinates"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/title"
-                android:layout_centerVertical="true"
-                android:maxLines="3"
-                android:padding="8dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:textColor="#444"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                cardview:layout_constraintEnd_toEndOf="parent"
-                cardview:layout_constraintHorizontal_bias="0.0"
-                cardview:layout_constraintStart_toStartOf="parent"
-                cardview:layout_constraintTop_toBottomOf="@+id/title" />
-        </android.support.constraint.ConstraintLayout>
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/thumbnail"
+                    android:layout_centerVertical="true"
+                    android:maxLines="3"
+                    android:padding="8dp"
+                    android:text="@{image.title}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="#444"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    cardview:layout_constraintEnd_toEndOf="parent"
+                    cardview:layout_constraintStart_toStartOf="parent"
+                    cardview:layout_constraintTop_toBottomOf="@+id/thumbnail" />
 
-    </android.support.v7.widget.CardView>
+                <TextView
+                    android:id="@+id/coordinates"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/title"
+                    android:layout_centerVertical="true"
+                    android:maxLines="3"
+                    android:padding="8dp"
+                    android:text="@{coordinateFormatter.format(image.latitude,image.longitude)}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="#444"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    cardview:layout_constraintEnd_toEndOf="parent"
+                    cardview:layout_constraintHorizontal_bias="0.0"
+                    cardview:layout_constraintStart_toStartOf="parent"
+                    cardview:layout_constraintTop_toBottomOf="@+id/title" />
+            </android.support.constraint.ConstraintLayout>
 
-</ScrollView>
+        </android.support.v7.widget.CardView>
+
+    </ScrollView>
+</layout>

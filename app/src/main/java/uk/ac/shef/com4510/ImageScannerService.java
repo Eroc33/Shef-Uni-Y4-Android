@@ -2,7 +2,6 @@ package uk.ac.shef.com4510;
 
 import android.Manifest;
 import android.app.IntentService;
-import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 

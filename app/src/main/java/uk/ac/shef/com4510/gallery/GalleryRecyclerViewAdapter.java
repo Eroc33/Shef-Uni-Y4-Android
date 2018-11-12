@@ -1,16 +1,14 @@
 package uk.ac.shef.com4510.gallery;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,21 +16,25 @@ import java.util.List;
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.SetImageViewSourceTask;
 import uk.ac.shef.com4510.data.Image;
+import uk.ac.shef.com4510.databinding.GalleryItemBinding;
 import uk.ac.shef.com4510.details.DetailsActivity;
 
 public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = GalleryRecyclerViewAdapter.class.getCanonicalName();
     private final Context context;
+    private final GalleryViewModel viewModel;
+    private final LifecycleOwner lifecycleOwner;
     private List<Image> images = new ArrayList<>();
-    private LayoutInflater layoutInflater;
 
-    public GalleryRecyclerViewAdapter(Context context) {
+    public GalleryRecyclerViewAdapter(Context context, GalleryViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.context = context;
-        layoutInflater = LayoutInflater.from(context);
+        this.viewModel = viewModel;
+        this.lifecycleOwner = lifecycleOwner;
+        this.viewModel.getImages().observe(lifecycleOwner, this::setImages);
     }
 
-    public void setImages(final List<Image> newImages) {
+    private void setImages(final List<Image> newImages) {
         //TODO: if performance is poor consider using DiffUtil here
         images = newImages;
         notifyDataSetChanged();
@@ -41,31 +43,17 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.gallery_item, parent, false);
-        return new ViewHolder(view);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        GalleryItemBinding binding = GalleryItemBinding.inflate(inflater, parent, false);
+        binding.setLifecycleOwner(lifecycleOwner);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //TODO: cancel image load task if we rebind a holder while it's loading
         Image image = images.get(position);
-        if(holder.loadTask != null){
-            Log.d(TAG, "Canceling load task");
-            holder.loadTask.cancel(true);
-        }
-        holder.textView.setText(image.getTitle());
-        holder.imageView.setImageDrawable(null);
-        holder.itemView.setOnClickListener(view -> {
-            this.showDetailView(image.getPath());
-        });
-        holder.loadTask = new SetImageViewSourceTask();
-        holder.loadTask.execute(
-                new SetImageViewSourceTask.Parameters(
-                        holder.getImageView(),
-                        holder.getBitmap(),
-                        image.getPath(),
-                        holder::setBitmap)
-        );
+        holder.rebind(image, () -> this.showDetailView(image.getPath()));
     }
 
     private void showDetailView(String path) {
@@ -79,34 +67,36 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
         return images.size();
     }
 
-    public void holderBitmapReady(ViewHolder viewHolder) {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
-    }
+        private final ImageView imageView;
+        private SetImageViewSourceTask loadTask;
+        private GalleryItemBinding binding;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        public SetImageViewSourceTask loadTask;
-        ImageView imageView;
-        TextView textView;
-        Bitmap bitmap;
-
-        ViewHolder(View view) {
-            super(view);
-            this.imageView = view.findViewById(R.id.thumbnail);
-            this.textView = view.findViewById(R.id.title);
-            this.bitmap = null;
+        ViewHolder(GalleryItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            this.imageView = binding.getRoot().findViewById(R.id.thumbnail);
         }
 
-        public Bitmap getBitmap() {
-            return bitmap;
-        }
-
-        public void setBitmap(Bitmap bitmap) {
-            this.bitmap = bitmap;
-        }
-
-        public ImageView getImageView() {
-            return this.imageView;
+        void rebind(Image image, Runnable onSelected) {
+            //TODO: cancel image load task if we rebind a holder while it's loading
+            if (loadTask != null) {
+                Log.d(TAG, "Canceling load task");
+                loadTask.cancel(true);
+            }
+            binding.setImage(image);
+            binding.setSelectedListener(onSelected);
+            binding.executePendingBindings();
+            //TODO: convert more of this to databinding style
+            imageView.setImageDrawable(null);
+            //TODO: find a way to set image source from databinding, but allow cancellation
+            loadTask = new SetImageViewSourceTask();
+            loadTask.execute(
+                    new SetImageViewSourceTask.Parameters(
+                            imageView,
+                            image.getPath())
+            );
         }
     }
 }

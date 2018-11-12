@@ -11,7 +11,7 @@ import uk.ac.shef.com4510.ImageRepository;
 import uk.ac.shef.com4510.data.Image;
 
 public class MapViewModel extends AndroidViewModel {
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
     public LiveData<List<Image>> getImages() {
         return imageRepository.getAllImages();

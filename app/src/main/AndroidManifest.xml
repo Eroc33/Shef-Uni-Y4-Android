@@ -31,6 +31,7 @@
         <activity android:name=".details.DetailsActivity" />
 
         <activity android:name=".map.MapActivity" />
+        <activity android:name=".camera.CameraActivity" />
 
         <service android:name=".ImageScannerService" />
 
@@ -41,7 +42,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
 
     </application>

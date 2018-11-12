@@ -1,45 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".gallery.GalleryActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/gallery_recycler"
+    <data>
+
+        <variable
+            name="adapterProvider"
+            type="uk.ac.shef.com4510.support.databinding.RecyclerViewAdapterProvider" />
+
+        <variable
+            name="viewModel"
+            type="uk.ac.shef.com4510.gallery.GalleryViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="android.support.v7.widget.GridLayoutManager"
-        app:spanCount="2"
-        app:fastScrollEnabled="true"
-        app:fastScrollVerticalThumbDrawable="@drawable/scroll_thumb"
-        app:fastScrollVerticalTrackDrawable="@drawable/scroll_track"
-        app:fastScrollHorizontalThumbDrawable="@drawable/scroll_thumb"
-        app:fastScrollHorizontalTrackDrawable="@drawable/scroll_track"/>
+        tools:context=".gallery.GalleryActivity">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="@dimen/fab_margin"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:backgroundTint="@color/colorAccent"
-        app:fabSize="normal"
-        android:src="@drawable/ic_add_a_photo_white_24dp" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/gallery_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adapter="@{adapterProvider.adapter}"
+            app:fastScrollEnabled="true"
+            app:fastScrollHorizontalThumbDrawable="@drawable/scroll_thumb"
+            app:fastScrollHorizontalTrackDrawable="@drawable/scroll_track"
+            app:fastScrollVerticalThumbDrawable="@drawable/scroll_thumb"
+            app:fastScrollVerticalTrackDrawable="@drawable/scroll_track"
+            app:layoutManager="android.support.v7.widget.GridLayoutManager"
+            app:spanCount="2" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_map"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
-        android:layout_margin="@dimen/fab_margin"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:backgroundTint="@color/colorAccent"
-        app:fabSize="normal"
-        android:src="@drawable/ic_map_white_24dp" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:onClick="@{(btn) -> viewModel.openCamera()}"
+            android:src="@drawable/ic_add_a_photo_white_24dp"
+            app:backgroundTint="@color/colorAccent"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="@dimen/fab_margin"
+            android:onClick="@{(btn) -> viewModel.openMap()}"
+            android:src="@drawable/ic_map_white_24dp"
+            app:backgroundTint="@color/colorAccent"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

@@ -10,8 +10,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.List;
-
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.data.Image;
 
@@ -19,7 +17,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     private GoogleMap map;
     private MapViewModel viewModel;
-    private List<Image> images;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

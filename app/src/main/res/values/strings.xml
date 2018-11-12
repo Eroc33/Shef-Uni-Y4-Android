@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">COM4510</string>
     <string name="selected_image">Selected Image</string>
+    <string name="coordinate_format_string">Latitude: %f, Longitude: %f</string>
 </resources>

@@ -9,9 +9,9 @@ import android.support.annotation.NonNull;
 import uk.ac.shef.com4510.ImageRepository;
 import uk.ac.shef.com4510.data.Image;
 
-public class DetailsViewModel extends AndroidViewModel {
-    private ImageRepository imageRepository;
-    private MediatorLiveData<Image> image = new MediatorLiveData<Image>();
+class DetailsViewModel extends AndroidViewModel {
+    private final ImageRepository imageRepository;
+    private MediatorLiveData<Image> image = new MediatorLiveData<>();
     private LiveData<Image> imageSource;
 
     public DetailsViewModel(@NonNull Application application) {
