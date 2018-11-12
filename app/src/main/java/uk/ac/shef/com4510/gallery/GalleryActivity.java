@@ -5,21 +5,34 @@ import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import uk.ac.shef.com4510.ImageScannerService;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import uk.ac.shef.com4510.R;
 
 public class GalleryActivity
         extends AppCompatActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback {
+
+    private static final String TAG = "GalleryActivity";
 
     class PermissionRequestCode {
         static final int READ_EXTERNAL_STORAGE = 101;
@@ -33,6 +46,7 @@ public class GalleryActivity
     private RecyclerView recyclerView;
     private GalleryViewModel viewModel;
     private GalleryRecyclerViewAdapter adapter;
+    private File currentCaptureFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +71,7 @@ public class GalleryActivity
     }
 
     private void continueSetup() {
-        ImageScannerService.start(getApplicationContext());
+        ImageScannerService.scan_all(getApplicationContext());
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         adapter = new GalleryRecyclerViewAdapter(getApplicationContext());
         viewModel.getImages().observe(this, allImages -> adapter.setImages(allImages));
@@ -67,8 +81,10 @@ public class GalleryActivity
 
     private void tryOpenCamera() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[] {Manifest.permission.CAMERA},
+                != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED ) {
+            requestPermissions(new String[] {Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     PermissionRequestCode.CAMERA);
         } else {
             openCamera();
@@ -77,7 +93,21 @@ public class GalleryActivity
 
     private void openCamera() {
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        startActivityForResult(intent, PermissionRequestCode.CAMERA);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), newFilename());
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    "uk.ac.shef.com4510",
+                    photoFile);
+            currentCaptureFile = photoFile;
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        }
+        startActivityForResult(intent, ActivityResultCode.CAMERA);
+    }
+
+    private String newFilename() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        return "IMG_" + timeStamp + ".jpg";
+
     }
 
     @Override
@@ -103,7 +133,21 @@ public class GalleryActivity
         switch(requestCode) {
             case ActivityResultCode.CAMERA: {
                 if(resultCode == Activity.RESULT_OK){
-                    // Photo received
+                    Log.i(TAG,String.format("Will load_one %s",currentCaptureFile.toString()));
+                    if(currentCaptureFile == null){
+                        throw new RuntimeException("currentCaptureFile is null when camera completes. this shouldn't  be possible");
+                    }
+                    File file = currentCaptureFile;
+                    currentCaptureFile = null;
+
+                    try {
+                        //TODO: this only adds basic information to the entry, need to extend this
+                        // to add, for example, location data
+                        MediaStore.Images.Media.insertImage(getContentResolver(),file.getCanonicalPath(),file.getName(),file.getName());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this,"Error while saving photo",Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }
