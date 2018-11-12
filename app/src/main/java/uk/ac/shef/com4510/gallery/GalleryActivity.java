@@ -3,6 +3,7 @@ package uk.ac.shef.com4510.gallery;
 import android.Manifest;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.View;
 
 import uk.ac.shef.com4510.ImageScannerService;
 import uk.ac.shef.com4510.R;
+import uk.ac.shef.com4510.map.MapActivity;
 
 public class GalleryActivity
         extends AppCompatActivity
@@ -39,7 +41,8 @@ public class GalleryActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     PermissionRequestCode.READ_EXTERNAL_STORAGE);
@@ -47,19 +50,30 @@ public class GalleryActivity
             continueSetup();
         }
 
-        FloatingActionButton fab = findViewById(R.id.fab_camera);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fabCamera = findViewById(R.id.fab_camera);
+        fabCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 tryOpenCamera();
             }
         });
+
+        FloatingActionButton fabMap = findViewById(R.id.fab_map);
+        fabMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Context context = getApplicationContext();
+                Intent startActivityIntent = new Intent(context, MapActivity.class);
+                context.startActivity(startActivityIntent);
+            }
+        });
     }
 
     private void continueSetup() {
-        ImageScannerService.start(getApplicationContext());
+        Context context = getApplicationContext();
+        ImageScannerService.start(context);
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
-        adapter = new GalleryRecyclerViewAdapter(getApplicationContext());
+        adapter = new GalleryRecyclerViewAdapter(context);
         viewModel.getImages().observe(this, allImages -> adapter.setImages(allImages));
         recyclerView = findViewById(R.id.gallery_recycler);
         recyclerView.setAdapter(adapter);
@@ -81,7 +95,8 @@ public class GalleryActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PermissionRequestCode.READ_EXTERNAL_STORAGE: {
                 continueSetup();
@@ -89,7 +104,8 @@ public class GalleryActivity
             }
 
             case PermissionRequestCode.CAMERA: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0]
+                        == PackageManager.PERMISSION_GRANTED) {
                     openCamera();
                 }
 
