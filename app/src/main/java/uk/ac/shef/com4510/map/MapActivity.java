@@ -1,17 +1,15 @@
 package uk.ac.shef.com4510.map;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.shef.com4510.R;
@@ -29,7 +27,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         setContentView(R.layout.activity_map);
         viewModel = ViewModelProviders.of(this).get(MapViewModel.class);
-        viewModel.getImages().observe(this, images -> { this.images = images; });
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -37,10 +34,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     private void setMapMarkers() {
-        for (Image img : images) {
-            LatLng pos = new LatLng(img.getLatitude(), img.getLongitude());
-            map.addMarker(new MarkerOptions().position(pos).title(img.getTitle()));
-        }
+        viewModel.getImages().observe(this, images -> {
+            map.clear();
+            if (images == null) {
+                return;
+            }
+            for (Image img : images) {
+                LatLng pos = new LatLng(img.getLatitude(), img.getLongitude());
+                map.addMarker(new MarkerOptions().position(pos).title(img.getTitle()));
+            }
+        });
     }
 
     @Override
