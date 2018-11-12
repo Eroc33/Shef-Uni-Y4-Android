@@ -11,7 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="android.support.v7.widget.GridLayoutManager"
-        app:spanCount="2"/>
+        app:spanCount="2"
+        app:fastScrollEnabled="true"
+        app:fastScrollVerticalThumbDrawable="@drawable/scroll_thumb"
+        app:fastScrollVerticalTrackDrawable="@drawable/scroll_track"
+        app:fastScrollHorizontalThumbDrawable="@drawable/scroll_thumb"
+        app:fastScrollHorizontalTrackDrawable="@drawable/scroll_track"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_camera"
