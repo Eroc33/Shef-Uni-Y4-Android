@@ -14,7 +14,7 @@ public class AsyncImageBindingAdapter {
 
     @BindingAdapter("app:imageAsync")
     public static void setImageAsync(ImageView view, String path) {
-        //cancel any old tasks for this iamge
+        //cancel any old tasks for this image
         WeakReference<SetImageViewSourceTask> taskRef = tasks.get(view);
         if (taskRef != null) {
             SetImageViewSourceTask task = taskRef.get();
