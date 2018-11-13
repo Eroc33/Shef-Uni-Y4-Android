@@ -7,6 +7,8 @@ import android.widget.ImageView;
 
 public class SetImageViewSourceTask extends AsyncTask<SetImageViewSourceTask.Parameters, Void, SetImageViewSourceTask.Parameters[]> {
 
+    private boolean complete;
+
     @Override
     protected SetImageViewSourceTask.Parameters[] doInBackground(Parameters... params) {
         for (Parameters param : params) {
@@ -20,6 +22,11 @@ public class SetImageViewSourceTask extends AsyncTask<SetImageViewSourceTask.Par
         for (SetImageViewSourceTask.Parameters parameter : parameters) {
             parameter.imageView.setImageBitmap(parameter.bitmap);
         }
+        complete = true;
+    }
+
+    public boolean isComplete() {
+        return complete;
     }
 
     public static class Parameters {
