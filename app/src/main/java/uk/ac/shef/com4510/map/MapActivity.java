@@ -54,6 +54,7 @@ public class MapActivity extends FragmentActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+        map.setOnMarkerClickListener(this);
         setMapMarkers();
     }
 
