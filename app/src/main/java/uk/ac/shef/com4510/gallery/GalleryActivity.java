@@ -17,15 +17,31 @@ import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.camera.CameraActivity;
 import uk.ac.shef.com4510.databinding.ActivityGalleryBinding;
 import uk.ac.shef.com4510.map.MapActivity;
+import uk.ac.shef.com4510.search.SearchActivity;
 import uk.ac.shef.com4510.support.databinding.RecyclerViewAdapterProvider;
 
 public class GalleryActivity
         extends AppCompatActivity
-        implements ActivityCompat.OnRequestPermissionsResultCallback, RecyclerViewAdapterProvider {
+        implements ActivityCompat.OnRequestPermissionsResultCallback, RecyclerViewAdapterProvider, GalleryActions {
 
     private static final String TAG = "GalleryActivity";
 
     private ActivityGalleryBinding binding;
+
+    @Override
+    public void openCamera() {
+        startActivity(new Intent(this, CameraActivity.class));
+    }
+
+    @Override
+    public void openMap() {
+        startActivity(new Intent(this, MapActivity.class));
+    }
+
+    @Override
+    public void openSearch() {
+        startActivity(new Intent(this, SearchActivity.class));
+    }
 
     class PermissionRequestCode {
         static final int READ_EXTERNAL_STORAGE = 101;
@@ -44,6 +60,7 @@ public class GalleryActivity
         binding = DataBindingUtil.setContentView(this, R.layout.activity_gallery);
         binding.setLifecycleOwner(this);
         binding.setAdapterProvider(this);
+        binding.setActions(this);
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -58,8 +75,6 @@ public class GalleryActivity
     private void continueSetup() {
         ImageScannerService.scan_all(getApplicationContext());
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
-        viewModel.setOnOpenCamera(() -> startActivity(new Intent(this, CameraActivity.class)));
-        viewModel.setOnOpenMap(() -> startActivity(new Intent(this, MapActivity.class)));
         binding.setViewModel(viewModel);
         binding.executePendingBindings();
     }
