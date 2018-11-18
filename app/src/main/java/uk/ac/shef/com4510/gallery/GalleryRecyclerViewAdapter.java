@@ -2,29 +2,29 @@ package uk.ac.shef.com4510.gallery;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.navigation.Navigation;
+import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.databinding.GalleryItemBinding;
-import uk.ac.shef.com4510.details.DetailsActivity;
 
 public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = GalleryRecyclerViewAdapter.class.getCanonicalName();
-    private final Context context;
     private final GalleryViewModel viewModel;
     private final LifecycleOwner lifecycleOwner;
     private List<Image> images = new ArrayList<>();
 
     public GalleryRecyclerViewAdapter(Context context, GalleryViewModel viewModel, LifecycleOwner lifecycleOwner) {
-        this.context = context;
         this.viewModel = viewModel;
         this.lifecycleOwner = lifecycleOwner;
         this.viewModel.getImages().observe(lifecycleOwner, this::setImages);
@@ -48,13 +48,13 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Image image = images.get(position);
-        holder.rebind(image, () -> this.showDetailView(image.getPath()));
+        holder.rebind(image, (view) -> this.showDetailView(view, image.getPath()));
     }
 
-    private void showDetailView(String path) {
-        Intent startActivityIntent = new Intent(context, DetailsActivity.class);
-        startActivityIntent.putExtra("imagePath", path);
-        context.startActivity(startActivityIntent);
+    private void showDetailView(View view, String path) {
+        Bundle bundle = new Bundle();
+        bundle.putString("imagePath", path);
+        Navigation.findNavController(view).navigate(R.id.action_galleryFragment_to_detailsActivity, bundle);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
             this.binding = binding;
         }
 
-        void rebind(Image image, Runnable onSelected) {
+        void rebind(Image image, View.OnClickListener onSelected) {
             binding.setImage(image);
             binding.setSelectedListener(onSelected);
             binding.executePendingBindings();

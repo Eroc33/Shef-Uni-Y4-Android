@@ -20,7 +20,7 @@
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".gallery.GalleryActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,11 +29,7 @@
         </activity>
 
         <activity android:name=".details.DetailsActivity" />
-
-        <activity android:name=".map.MapActivity" />
         <activity android:name=".camera.CameraActivity" />
-        <activity android:name=".search.SearchActivity" />
-
         <service android:name=".ImageScannerService" />
 
         <provider

@@ -2,45 +2,35 @@ package uk.ac.shef.com4510.gallery;
 
 import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.navigation.Navigation;
 import uk.ac.shef.com4510.ImageScannerService;
 import uk.ac.shef.com4510.R;
-import uk.ac.shef.com4510.camera.CameraActivity;
-import uk.ac.shef.com4510.databinding.ActivityGalleryBinding;
-import uk.ac.shef.com4510.map.MapActivity;
-import uk.ac.shef.com4510.search.SearchActivity;
+import uk.ac.shef.com4510.databinding.GalleryFragmentBinding;
 import uk.ac.shef.com4510.support.databinding.RecyclerViewAdapterProvider;
 
-public class GalleryActivity
-        extends AppCompatActivity
+public class GalleryFragment
+        extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback, RecyclerViewAdapterProvider, GalleryActions {
 
-    private static final String TAG = "GalleryActivity";
+    private static final String TAG = "GalleryFragment";
 
-    private ActivityGalleryBinding binding;
+    private GalleryFragmentBinding binding;
 
     @Override
     public void openCamera() {
-        startActivity(new Intent(this, CameraActivity.class));
-    }
-
-    @Override
-    public void openMap() {
-        startActivity(new Intent(this, MapActivity.class));
-    }
-
-    @Override
-    public void openSearch() {
-        startActivity(new Intent(this, SearchActivity.class));
+        Navigation.findNavController(this.getView()).navigate(R.id.action_galleryFragment_to_cameraActivity);
     }
 
     class PermissionRequestCode {
@@ -51,18 +41,18 @@ public class GalleryActivity
 
     @Override
     public RecyclerView.Adapter<?> getAdapter() {
-        return new GalleryRecyclerViewAdapter(this, viewModel, this);
+        return new GalleryRecyclerViewAdapter(getContext(), viewModel, this);
     }
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_gallery);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = GalleryFragmentBinding.inflate(inflater, container, false);
         binding.setLifecycleOwner(this);
         binding.setAdapterProvider(this);
         binding.setActions(this);
 
-        if (ContextCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -70,10 +60,11 @@ public class GalleryActivity
         } else {
             continueSetup();
         }
+        return binding.getRoot();
     }
 
     private void continueSetup() {
-        ImageScannerService.scan_all(getApplicationContext());
+        ImageScannerService.scan_all(requireActivity().getApplicationContext());
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         binding.setViewModel(viewModel);
         binding.executePendingBindings();

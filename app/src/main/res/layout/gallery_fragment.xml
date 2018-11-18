@@ -4,11 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="adapterProvider"
             type="uk.ac.shef.com4510.support.databinding.RecyclerViewAdapterProvider" />
-
         <variable
             name="viewModel"
             type="uk.ac.shef.com4510.gallery.GalleryViewModel" />
@@ -20,7 +18,7 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".gallery.GalleryActivity">
+        tools:context=".gallery.GalleryFragment">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/gallery_recycler"
@@ -47,36 +45,6 @@
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_map"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:onClick="@{(btn) -> actions.openMap()}"
-            android:src="@drawable/ic_map_white_24dp"
-            app:backgroundTint="@color/colorAccent"
-            app:fabSize="normal"
-            app:layout_constraintBottom_toTopOf="@+id/fab_camera"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:layout_marginEnd="136dp"
-            android:layout_marginBottom="8dp"
-            android:onClick="@{(btn) -> actions.openSearch()}"
-            android:src="@android:drawable/ic_menu_search"
-            app:backgroundTint="@color/colorAccent"
-            app:fabSize="normal"
-            app:layout_constraintBottom_toTopOf="@+id/fab_map"
-            app:layout_constraintEnd_toEndOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>
