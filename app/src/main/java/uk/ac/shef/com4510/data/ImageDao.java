@@ -4,7 +4,9 @@ import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.TypeConverters;
 
+import java.util.Calendar;
 import java.util.List;
 
 @Dao
@@ -29,4 +31,8 @@ public abstract class ImageDao {
 
     @Query("SELECT * FROM image where path = :path")
     public abstract LiveData<Image> getImage(String path);
+
+    @TypeConverters(Converters.class)
+    @Query("SELECT * FROM image where (title = :title OR :title IS NULL) AND (description = :description OR :description IS NULL) AND (date = :date OR :date IS NULL)")
+    public abstract LiveData<List<Image>> search(String title, String description, Calendar date);
 }
