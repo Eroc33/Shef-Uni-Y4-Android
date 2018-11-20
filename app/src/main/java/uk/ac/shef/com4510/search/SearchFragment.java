@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.navigation.Navigation;
+import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.databinding.SearchFragmentBinding;
 
 public class SearchFragment extends Fragment implements SearchActions {
@@ -37,6 +39,8 @@ public class SearchFragment extends Fragment implements SearchActions {
 
     @Override
     public void doSearch() {
-        //TODO
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("search", viewModel.makeSearch());
+        Navigation.findNavController(getView()).navigate(R.id.action_searchFragment_to_galleryFragment, bundle);
     }
 }

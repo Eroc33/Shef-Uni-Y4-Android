@@ -17,4 +17,8 @@ public class SearchViewModel extends AndroidViewModel {
     public SearchViewModel(@NonNull Application application) {
         super(application);
     }
+
+    public Search makeSearch() {
+        return new Search(title.getValue(), description.getValue(), date.getValue());
+    }
 }

@@ -16,15 +16,26 @@
         <action
             android:id="@+id/action_galleryFragment_to_cameraActivity"
             app:destination="@id/cameraActivity" />
+        <argument
+            android:name="search"
+            app:argType="reference" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="uk.ac.shef.com4510.search.SearchFragment"
-        android:label="SearchFragment" />
+        android:label="SearchFragment">
+        <action
+            android:id="@+id/action_searchFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mapFragment"
         android:name="uk.ac.shef.com4510.map.MapFragment"
-        android:label="MapFragment" />
+        android:label="MapFragment">
+        <action
+            android:id="@+id/action_mapFragment_to_detailsActivity"
+            app:destination="@id/detailsActivity" />
+    </fragment>
     <activity
         android:id="@+id/cameraActivity"
         android:name="uk.ac.shef.com4510.camera.CameraActivity"

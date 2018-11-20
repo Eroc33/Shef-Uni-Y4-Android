@@ -18,6 +18,7 @@ import androidx.navigation.Navigation;
 import uk.ac.shef.com4510.ImageScannerService;
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.databinding.GalleryFragmentBinding;
+import uk.ac.shef.com4510.search.Search;
 import uk.ac.shef.com4510.support.databinding.RecyclerViewAdapterProvider;
 
 public class GalleryFragment
@@ -64,8 +65,12 @@ public class GalleryFragment
     }
 
     private void continueSetup() {
+        Search search = getArguments().getParcelable("search");
         ImageScannerService.scan_all(requireActivity().getApplicationContext());
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
+        if (search != null) {
+            viewModel.applySearch(search);
+        }
         binding.setViewModel(viewModel);
         binding.executePendingBindings();
     }

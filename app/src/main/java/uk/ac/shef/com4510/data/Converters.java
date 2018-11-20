@@ -11,7 +11,7 @@ public final class Converters {
     }
 
     @TypeConverter
-    public static Calendar fromUnixTimestamp(Long seconds) {
+    public static Calendar calendarFromUnixTimestamp(Long seconds) {
         if (seconds == null) {
             return null;
         }

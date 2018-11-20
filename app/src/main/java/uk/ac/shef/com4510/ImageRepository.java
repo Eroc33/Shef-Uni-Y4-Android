@@ -6,21 +6,26 @@ import android.arch.lifecycle.LiveData;
 import java.util.List;
 
 import uk.ac.shef.com4510.data.Image;
+import uk.ac.shef.com4510.search.Search;
 
 public class ImageRepository {
     private static final String TAG = "ImageRepository";
-    private final Application app;
+    private final uk.ac.shef.com4510.Application app;
 
 
     public ImageRepository(Application app) {
-        this.app = app;
+        this.app = (uk.ac.shef.com4510.Application) app;
     }
 
     public LiveData<List<Image>> getAllImages() {
-        return ((uk.ac.shef.com4510.Application) app).getImageDb().imageDao().allImages();
+        return app.getImageDb().imageDao().allImages();
     }
 
     public LiveData<Image> getImage(String path) {
-        return ((uk.ac.shef.com4510.Application) app).getImageDb().imageDao().getImage(path);
+        return app.getImageDb().imageDao().getImage(path);
+    }
+
+    public LiveData<List<Image>> search(Search search) {
+        return app.getImageDb().imageDao().search(search.getTitle(), search.getDescription(), search.getDate());
     }
 }

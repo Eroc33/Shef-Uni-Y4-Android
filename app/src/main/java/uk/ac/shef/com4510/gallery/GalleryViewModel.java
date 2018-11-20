@@ -9,15 +9,24 @@ import java.util.List;
 
 import uk.ac.shef.com4510.ImageRepository;
 import uk.ac.shef.com4510.data.Image;
+import uk.ac.shef.com4510.search.Search;
 
 public class GalleryViewModel extends AndroidViewModel {
     private final ImageRepository imageRepository;
 
-    public LiveData<List<Image>> getImages() {
-        return imageRepository.getAllImages();
-    }
+    private LiveData<List<Image>> images;
+
     public GalleryViewModel(@NonNull Application application) {
         super(application);
         imageRepository = new ImageRepository(application);
+        images = imageRepository.getAllImages();
+    }
+
+    public LiveData<List<Image>> getImages() {
+        return images;
+    }
+
+    public void applySearch(Search search) {
+        images = imageRepository.search(search);
     }
 }
