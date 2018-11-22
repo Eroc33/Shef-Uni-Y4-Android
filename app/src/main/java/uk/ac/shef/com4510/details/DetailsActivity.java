@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.databinding.ActivityDetailsBinding;
 import uk.ac.shef.com4510.support.CoordinateFormatter;
@@ -17,6 +21,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityDetailsBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_details);
         binding.setCoordinateFormatter(new CoordinateFormatter(getResources()));
+        binding.setDateFormatter(DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault()));
         binding.setLifecycleOwner(this);
 
         //TODO: handle case that path is not set

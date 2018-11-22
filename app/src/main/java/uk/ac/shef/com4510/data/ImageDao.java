@@ -33,6 +33,6 @@ public abstract class ImageDao {
     public abstract LiveData<Image> getImage(String path);
 
     @TypeConverters(Converters.class)
-    @Query("SELECT * FROM image where (title LIKE :title OR :title IS NULL) AND (description LIKE :description OR :description IS NULL) AND (date = :date OR :date IS NULL)")
-    public abstract LiveData<List<Image>> search(String title, String description, Calendar date);
+    @Query("SELECT * FROM image where (title LIKE :title OR :title IS NULL) AND (description LIKE :description OR :description IS NULL) AND ((date BETWEEN :startDate AND :endDate) OR (:startDate IS NULL OR :endDate IS NULL))")
+    public abstract LiveData<List<Image>> search(String title, String description, Calendar startDate, Calendar endDate);
 }

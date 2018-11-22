@@ -7,7 +7,9 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
+import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 @Entity
 public class Image {
@@ -74,5 +76,16 @@ public class Image {
 
     public Calendar getDate() {
         return date;
+    }
+
+    public String getDateString(DateFormat formatter){
+        if(date == null){
+            return null;
+        }
+        Date d = date.getTime();
+        if(d == null){
+            return null;
+        }
+        return formatter.format(d);
     }
 }
