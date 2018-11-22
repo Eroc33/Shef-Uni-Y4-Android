@@ -30,6 +30,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.LocationCallback;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+
+import java.io.File;
 
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.data.Image;
@@ -37,7 +41,19 @@ import uk.ac.shef.com4510.details.DetailsActivity;
 
 public class MapFragment extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback,
-        GoogleMap.OnMarkerClickListener {
+            ClusterManager.OnClusterItemClickListener<MapFragment.Cluster> {
+
+    @Override
+    public boolean onClusterItemClick(Cluster cluster) {
+        Context context = requireActivity().getApplicationContext();
+        Intent startActivityIntent = new Intent(context, DetailsActivity.class);
+        String path = cluster.getImage().getPath();
+
+        startActivityIntent.putExtra("imagePath", path);
+        context.startActivity(startActivityIntent);
+
+        return true;
+    }
 
     class PermissionRequestCode {
         static final int ACCESS_FINE_LOCATION = 201;
@@ -49,6 +65,8 @@ public class MapFragment extends Fragment
     private LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
     private Location currentLocation;
+
+    private ClusterManager<Cluster> clusterManager;
 
     @Nullable
     @Override
@@ -88,16 +106,15 @@ public class MapFragment extends Fragment
 
     private void setMapMarkers() {
         viewModel.getImages().observe(this, images -> {
-            map.clear();
+            clusterManager.clearItems();
 
             if (images == null) return;
 
             for (Image img : images) {
-                LatLng pos = new LatLng(img.getLatitude(), img.getLongitude());
-                MarkerOptions options = new MarkerOptions().position(pos).title(img.getTitle());
-                Marker marker = map.addMarker(options);
-                marker.setTag(img.getPath());
+                clusterManager.addItem(new Cluster(img));
             }
+            //recalculate clusters
+            clusterManager.cluster();
         });
     }
 
@@ -137,22 +154,11 @@ public class MapFragment extends Fragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        map.setOnMarkerClickListener(this);
+        clusterManager = new ClusterManager<>(requireContext(),map);
+        clusterManager.setOnClusterItemClickListener(this);
+        map.setOnCameraIdleListener(clusterManager);
+        map.setOnMarkerClickListener(clusterManager);
         setMapMarkers();
-    }
-
-    @Override
-    public boolean onMarkerClick(final Marker marker) {
-        Context context = requireActivity().getApplicationContext();
-        Intent startActivityIntent = new Intent(context, DetailsActivity.class);
-        String path = (String) marker.getTag();
-
-        if (path != null) {
-            startActivityIntent.putExtra("imagePath", path);
-            context.startActivity(startActivityIntent);
-        }
-
-        return true;
     }
 
     @Override
@@ -168,6 +174,36 @@ public class MapFragment extends Fragment
 
                 break;
             }
+        }
+    }
+
+    public static class Cluster implements ClusterItem{
+
+        private final Image image;
+        private LatLng position;
+
+        public Cluster(Image image) {
+            position = new LatLng(image.getLatitude(),image.getLongitude());
+            this.image = image;
+        }
+
+        @Override
+        public LatLng getPosition() {
+            return position;
+        }
+
+        @Override
+        public String getTitle() {
+            return null;
+        }
+
+        @Override
+        public String getSnippet() {
+            return null;
+        }
+
+        public Image getImage() {
+            return image;
         }
     }
 }
