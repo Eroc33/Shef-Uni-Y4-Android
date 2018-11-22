@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import androidx.navigation.Navigation;
+
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "CameraActivity";
     private File currentCaptureFile;
@@ -97,6 +99,8 @@ public class CameraActivity extends AppCompatActivity {
                         e.printStackTrace();
                         Toast.makeText(this, "Error while saving photo", Toast.LENGTH_SHORT).show();
                     }
+                    finish();
+                }else{
                     finish();
                 }
             }

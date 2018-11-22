@@ -3,6 +3,7 @@ package uk.ac.shef.com4510;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
+import java.util.Calendar;
 import java.util.List;
 
 import uk.ac.shef.com4510.data.Image;
@@ -26,6 +27,16 @@ public class ImageRepository {
     }
 
     public LiveData<List<Image>> search(Search search) {
-        return app.getImageDb().imageDao().search(search.getTitle(), search.getDescription(), search.getDate());
+        Calendar startDate = Calendar.getInstance();
+        startDate.set(Calendar.YEAR,search.getDate().get(Calendar.YEAR));
+        startDate.set(Calendar.MONTH,search.getDate().get(Calendar.MONTH));
+        startDate.set(Calendar.DAY_OF_MONTH,search.getDate().get(Calendar.DAY_OF_MONTH));
+        startDate.set(Calendar.HOUR_OF_DAY,0);
+        startDate.set(Calendar.MINUTE,0);
+        startDate.set(Calendar.SECOND,0);
+        startDate.set(Calendar.MILLISECOND,0);
+        Calendar endDate = (Calendar) startDate.clone();
+        endDate.add(Calendar.HOUR,24);
+        return app.getImageDb().imageDao().search(search.getTitle(), search.getDescription(), startDate, endDate);
     }
 }
