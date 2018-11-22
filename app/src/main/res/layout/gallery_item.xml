@@ -34,7 +34,7 @@
                 android:layout_height="180dp"
                 android:layout_alignParentTop="true"
                 android:scaleType="centerCrop"
-                app:imageAsync="@{image.path}" />
+                app:imageAsync="@{image.bestThumbnailPath}" />
 
             <TextView
                 android:id="@+id/title"

@@ -9,11 +9,18 @@ import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.io.File;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,13 +90,14 @@ public class ImageScannerService extends IntentService {
                         getApplicationContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                     continue;
                 }
+                boolean isExternal = uri==MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                 try (Cursor cursor = contentResolver.query(uri, Image.FIELDS, null, null, null, null)) {
                     int pathIndex = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
                     ImageDao imageDatabase = getImageDao();
                     cursor.moveToNext();
                     while (!cursor.isAfterLast()) {
                         if (!imageDatabase.containsSync(cursor.getString(pathIndex))) {
-                            imageDatabase.insertSync(Image.fromCursor(cursor));
+                            imageDatabase.insertSync(Image.fromCursor(cursor,thumbnailFromCursor(cursor,isExternal)));
                         }
                         cursor.moveToNext();
                     }
@@ -105,6 +113,29 @@ public class ImageScannerService extends IntentService {
         }
     }
 
+    private String thumbnailFromCursor(Cursor cursor, boolean isExternalImage) {
+        String imageId = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID));
+        Uri uri = MediaStore.Images.Thumbnails.INTERNAL_CONTENT_URI;
+        if(isExternalImage){
+            uri = MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI;
+        }
+        try(Cursor c2 = contentResolver.query(
+                uri,
+                new String[]{MediaStore.Images.Thumbnails.DATA},
+                MediaStore.Images.Thumbnails.IMAGE_ID + " = ?",
+                new String[]{imageId},
+                null,
+                null
+        )){
+            c2.moveToFirst();
+            if(c2.isAfterLast() || c2.getColumnCount() <= 0){
+                //TODO: If no thumbnail create one
+                return null;
+            }
+            return c2.getString(0);
+        }
+    }
+
     private ImageDao getImageDao() {
         return ((Application) getApplication()).getImageDb().imageDao();
     }
@@ -113,12 +144,13 @@ public class ImageScannerService extends IntentService {
         Log.i(TAG, String.format("Uri %s changed", uri.toString()));
         try (Cursor cursor = contentResolver.query(uri, Image.FIELDS, null, null, null, null)) {
             ImageDao imageDatabase = getImageDao();
-            cursor.moveToNext();
+            cursor.moveToFirst();
             int pathIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             if (pathIndex < 0) throw new AssertionError();
             if (!cursor.isAfterLast()) {
+                boolean isExternal = false;
                 if (!imageDatabase.containsSync(cursor.getString(pathIndex))) {
-                    imageDatabase.insertSync(Image.fromCursor(cursor));
+                    imageDatabase.insertSync(Image.fromCursor(cursor,thumbnailFromCursor(cursor,isExternal)));
                 }
             }
         }

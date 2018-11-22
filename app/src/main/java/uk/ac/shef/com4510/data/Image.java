@@ -6,6 +6,7 @@ import android.arch.persistence.room.TypeConverters;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -15,15 +16,19 @@ import java.util.Date;
 public class Image {
     public static final String[] FIELDS = new String[]{
             MediaStore.Images.Media.DATA,
+            MediaStore.Images.Media.MINI_THUMB_MAGIC,
             MediaStore.Images.Media.TITLE,
             MediaStore.Images.Media.LATITUDE,
             MediaStore.Images.Media.LONGITUDE,
             MediaStore.Images.Media.DESCRIPTION,
-            MediaStore.Images.Media.DATE_ADDED
+            MediaStore.Images.Media.DATE_ADDED,
+            MediaStore.Images.Media._ID,
     };
+    private static final String TAG = "Image";
     @PrimaryKey
     @NonNull
     private final String path;
+    private final String thumbnailPath;
     private final String title;
     private final double latitude;
     private final double longitude;
@@ -31,8 +36,9 @@ public class Image {
     @TypeConverters(Converters.class)
     private final Calendar date;
 
-    public Image(@NonNull String path, String title, double latitude, double longitude, String description, Calendar date) {
+    public Image(@NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, Calendar date) {
         this.path = path;
+        this.thumbnailPath = thumbnailPath;
         this.title = title;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -40,15 +46,16 @@ public class Image {
         this.date = date;
     }
 
-    public static Image fromCursor(Cursor cursor) {
+    public static Image fromCursor(Cursor cursor, String thumbnailPath) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(cursor.getLong(5) * 1000L);
         return new Image(
                 cursor.getString(0),
-                cursor.getString(1),
-                cursor.getDouble(2),
+                thumbnailPath,
+                cursor.getString(2),
                 cursor.getDouble(3),
-                cursor.getString(4),
+                cursor.getDouble(4),
+                cursor.getString(5),
                 cal
         );
     }
@@ -87,5 +94,17 @@ public class Image {
             return null;
         }
         return formatter.format(d);
+    }
+
+    public String getThumbnailPath() {
+        return thumbnailPath;
+    }
+
+    public String getBestThumbnailPath() {
+        if(thumbnailPath!=null){
+            return thumbnailPath;
+        }else{
+            return path;
+        }
     }
 }
