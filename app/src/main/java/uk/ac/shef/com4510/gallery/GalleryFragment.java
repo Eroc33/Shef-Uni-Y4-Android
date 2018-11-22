@@ -52,6 +52,13 @@ public class GalleryFragment
         binding.setLifecycleOwner(this);
         binding.setAdapterProvider(this);
         binding.setActions(this);
+        Search search = getArguments().getParcelable("search");
+        viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
+        if (search != null) {
+            viewModel.applySearch(search);
+        }
+        binding.setViewModel(viewModel);
+        binding.executePendingBindings();
 
         if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -65,14 +72,7 @@ public class GalleryFragment
     }
 
     private void continueSetup() {
-        Search search = getArguments().getParcelable("search");
         ImageScannerService.scan_all(requireActivity().getApplicationContext());
-        viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
-        if (search != null) {
-            viewModel.applySearch(search);
-        }
-        binding.setViewModel(viewModel);
-        binding.executePendingBindings();
     }
 
     @Override
