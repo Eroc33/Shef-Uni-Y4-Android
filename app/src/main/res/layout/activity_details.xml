@@ -11,6 +11,7 @@
         <variable
             name="coordinateFormatter"
             type="uk.ac.shef.com4510.support.CoordinateFormatter" />
+
         <variable
             name="dateFormatter"
             type="java.text.DateFormat"/>
@@ -41,11 +42,19 @@
                     android:scaleType="fitCenter"
                     app:imageAsync="@{image.path}" />
 
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_below="@id/thumbnail"
+                    app:layout_constraintTop_toBottomOf="@id/thumbnail" />
+
                 <TextView
                     android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/thumbnail"
+                    android:layout_below="@+id/map"
                     android:layout_centerVertical="true"
                     android:maxLines="3"
                     android:padding="8dp"
@@ -56,7 +65,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/thumbnail" />
+                    app:layout_constraintTop_toBottomOf="@+id/map" />
 
                 <TextView
                     android:id="@+id/coordinates"
@@ -94,8 +103,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/coordinates" />
             </android.support.constraint.ConstraintLayout>
-
         </android.support.v7.widget.CardView>
-
     </ScrollView>
 </layout>
