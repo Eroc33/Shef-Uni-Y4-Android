@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -92,8 +93,10 @@ public class CameraActivity extends AppCompatActivity {
                     currentCaptureFile = null;
 
                     try {
-                        //TODO: this only adds basic information to the entry, need to extend this
-                        // to add, for example, location data
+//                        ExifInterface exif = new ExifInterface(file.getName());
+//                        exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, mLat);
+//                        exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, mLon);
+//                        exif.saveAttributes();
                         MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), file.getName(), file.getName());
                     } catch (IOException e) {
                         e.printStackTrace();

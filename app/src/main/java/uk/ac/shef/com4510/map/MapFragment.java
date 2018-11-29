@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import java.io.File;
 
 import uk.ac.shef.com4510.R;
+import uk.ac.shef.com4510.SingleShotLocationProvider;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.details.DetailsActivity;
 
@@ -61,11 +63,6 @@ public class MapFragment extends Fragment
 
     private GoogleMap map;
     private MapViewModel viewModel;
-
-    private LocationRequest locationRequest;
-    private FusedLocationProviderClient fusedLocationClient;
-    private Location currentLocation;
-
     private ClusterManager<Cluster> clusterManager;
 
     @Nullable
@@ -92,18 +89,6 @@ public class MapFragment extends Fragment
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-
-        startLocationUpdates();
-    }
-
     private void setMapMarkers() {
         viewModel.getImages().observe(this, images -> {
             clusterManager.clearItems();
@@ -119,36 +104,29 @@ public class MapFragment extends Fragment
     }
 
     private void setLocationMarker() {
-        if (currentLocation != null) {
-            double lat = currentLocation.getLatitude();
-            double lng = currentLocation.getLongitude();
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            SingleShotLocationProvider.requestSingleUpdate(getContext(),
+                    new SingleShotLocationProvider.LocationCallback() {
+                        @Override public void onNewLocationAvailable(Location location) {
+                            double lat = location.getLatitude();
+                            double lng = location.getLongitude();
 
-            LatLng pos = new LatLng(lat, lng);
-            MarkerOptions options = new MarkerOptions()
-                    .position(pos)
-                    .icon(BitmapDescriptorFactory
-                            .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                            LatLng pos = new LatLng(lat, lng);
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(pos)
+                                    .icon(BitmapDescriptorFactory
+                                            .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
 
-            map.addMarker(options);
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14.0f));
-        }
-    }
-
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+                            map.addMarker(options);
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14.0f));
+                        }
+                    });
+        } else {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PermissionRequestCode.ACCESS_FINE_LOCATION);
-        } else {
-            fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    super.onLocationResult(locationResult);
-                    currentLocation = locationResult.getLastLocation();
-                }
-            }, null);
         }
+
     }
 
     @Override
@@ -169,7 +147,7 @@ public class MapFragment extends Fragment
             case PermissionRequestCode.ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startLocationUpdates();
+                    setLocationMarker();
                 }
 
                 break;
