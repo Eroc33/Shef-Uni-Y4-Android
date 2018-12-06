@@ -82,6 +82,34 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    private void savePhoto(File file) {
+        try {
+            MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), file.getName(), file.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), R.string.cannot_save_photo, Toast.LENGTH_SHORT).show();
+        } finally {
+            finish();
+        }
+    }
+
+    private void savePhoto(File file, double lat, double lng) {
+        try {
+            String lat_s = Double.toString(lat);
+            String lng_s = Double.toString(lng);
+            ExifInterface exif = new ExifInterface(file.getName());
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, lat_s);
+            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, lng_s);
+            exif.saveAttributes();
+            savePhoto(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), R.string.cannot_save_photo, Toast.LENGTH_SHORT).show();
+        } finally {
+            finish();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -100,35 +128,17 @@ public class CameraActivity extends AppCompatActivity {
                                 new SingleShotLocationProvider.LocationCallback() {
                                     @Override
                                     public void onLocationAvailable(Location location) {
-                                        try {
-                                            double lat = location.getLatitude();
-                                            double lng = location.getLongitude();
-                                            String lat_s = Double.toString(lat);
-                                            String lng_s = Double.toString(lng);
-                                            ExifInterface exif = new ExifInterface(file.getName());
-                                            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, lat_s);
-                                            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, lng_s);
-                                            exif.saveAttributes();
-                                            MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), file.getName(), file.getName());
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                            Toast.makeText(getApplicationContext(), R.string.cannot_save_photo, Toast.LENGTH_SHORT).show();
-                                        }
+                                        savePhoto(file, location.getLongitude(), location.getLatitude());
                                     }
 
                                     @Override
                                     public void onLocationUnavailable(SingleShotLocationProvider.LocationReason reason) {
-                                        try {
-                                            MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), file.getName(), file.getName());
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                            Toast.makeText(getApplicationContext(), R.string.cannot_save_photo, Toast.LENGTH_SHORT).show();
-                                        }
+                                        savePhoto(file);
                                     }
                                 });
                     }
 
-                    finish();
+                    savePhoto(file);
                 } else {
                     finish();
                 }
