@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,7 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.navigation.Navigation;
+import uk.ac.shef.com4510.R;
+import uk.ac.shef.com4510.SingleShotLocationProvider;
 
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "CameraActivity";
@@ -92,18 +94,42 @@ public class CameraActivity extends AppCompatActivity {
                     File file = currentCaptureFile;
                     currentCaptureFile = null;
 
-                    try {
-//                        ExifInterface exif = new ExifInterface(file.getName());
-//                        exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, mLat);
-//                        exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, mLon);
-//                        exif.saveAttributes();
-                        MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), file.getName(), file.getName());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(this, "Error while saving photo", Toast.LENGTH_SHORT).show();
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        SingleShotLocationProvider.requestSingleUpdate(getApplicationContext(),
+                                new SingleShotLocationProvider.LocationCallback() {
+                                    @Override
+                                    public void onLocationAvailable(Location location) {
+                                        try {
+                                            double lat = location.getLatitude();
+                                            double lng = location.getLongitude();
+                                            String lat_s = Double.toString(lat);
+                                            String lng_s = Double.toString(lng);
+                                            ExifInterface exif = new ExifInterface(file.getName());
+                                            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, lat_s);
+                                            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, lng_s);
+                                            exif.saveAttributes();
+                                            MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), file.getName(), file.getName());
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                            Toast.makeText(getApplicationContext(), R.string.cannot_save_photo, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onLocationUnavailable(SingleShotLocationProvider.LocationReason reason) {
+                                        try {
+                                            MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), file.getName(), file.getName());
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                            Toast.makeText(getApplicationContext(), R.string.cannot_save_photo, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
                     }
+
                     finish();
-                }else{
+                } else {
                     finish();
                 }
             }

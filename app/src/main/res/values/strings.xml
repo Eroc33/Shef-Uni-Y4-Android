@@ -4,4 +4,5 @@
     <string name="coordinate_format_string">Latitude: %f, Longitude: %f</string>
     <string name="no_gps">GPS must be enabled to use this feature</string>
     <string name="no_fine_location">Permission to access fine location must be granted to use this feature</string>
+    <string name="cannot_save_photo">Error while saving photo</string>
 </resources>

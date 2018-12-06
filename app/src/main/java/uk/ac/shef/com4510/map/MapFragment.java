@@ -16,25 +16,17 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.location.LocationCallback;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
-
-import java.io.File;
 
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.SingleShotLocationProvider;
@@ -108,7 +100,7 @@ public class MapFragment extends Fragment
                 == PackageManager.PERMISSION_GRANTED) {
             SingleShotLocationProvider.requestSingleUpdate(getContext(),
                     new SingleShotLocationProvider.LocationCallback() {
-                        @Override public void onNewLocationAvailable(Location location) {
+                        @Override public void onLocationAvailable(Location location) {
                             double lat = location.getLatitude();
                             double lng = location.getLongitude();
 
@@ -120,6 +112,21 @@ public class MapFragment extends Fragment
 
                             map.addMarker(options);
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14.0f));
+                        }
+
+                        @Override public void onLocationUnavailable(
+                                SingleShotLocationProvider.LocationReason reason) {
+                            switch (reason) {
+                                case NO_GPS: {
+                                    Toast.makeText(getContext(), R.string.no_gps, Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+
+                                case NO_FINE_LOCATION: {
+                                    Toast.makeText(getContext(), R.string.no_fine_location, Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+                            }
                         }
                     });
         } else {
