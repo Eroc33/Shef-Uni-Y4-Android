@@ -4,10 +4,12 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 import android.database.Cursor;
+import android.media.ExifInterface;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,8 +37,12 @@ public class Image {
     private final String description;
     @TypeConverters(Converters.class)
     private final Calendar date;
+    private final int iso;
+    private final double fstop;
+    private final double focalLength;
 
-    public Image(@NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, Calendar date) {
+    public Image(@NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, Calendar date, int iso, double fstop
+    , double focalLength) {
         this.path = path;
         this.thumbnailPath = thumbnailPath;
         this.title = title;
@@ -44,20 +50,51 @@ public class Image {
         this.longitude = longitude;
         this.description = description;
         this.date = date;
+        this.iso = iso;
+        this.fstop = fstop;
+        this.focalLength = focalLength;
     }
 
     public static Image fromCursor(Cursor cursor, String thumbnailPath) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(cursor.getLong(5) * 1000L);
+        String path = cursor.getString(0);
+        int iso = 0;
+        double fstop = 0.0;
+        double focalLength = 0.0;
+        try {
+            ExifInterface exif = new ExifInterface(path);
+            iso = exif.getAttributeInt(ExifInterface.TAG_ISO, 0);
+            //According to the exif standard ApertureValue is the fstop value
+            fstop = exif.getAttributeDouble(ExifInterface.TAG_APERTURE, 0.0);
+            focalLength = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0.0);
+        }catch (IOException e){
+            Log.w(TAG,String.format("Couldn't get exif for file '%s'. It may have been deleted.",path));
+        }
         return new Image(
-                cursor.getString(0),
+                path,
                 thumbnailPath,
                 cursor.getString(2),
                 cursor.getDouble(3),
                 cursor.getDouble(4),
                 cursor.getString(5),
-                cal
+                cal,
+                iso,
+                fstop,
+                focalLength
         );
+    }
+
+    public int getIso() {
+        return iso;
+    }
+
+    public double getFocalLength() {
+        return focalLength;
+    }
+
+    public double getFstop(){
+        return fstop;
     }
 
     @NonNull
