@@ -27,16 +27,21 @@ public class ImageRepository {
     }
 
     public LiveData<List<Image>> search(Search search) {
-        Calendar startDate = Calendar.getInstance();
-        startDate.set(Calendar.YEAR,search.getDate().get(Calendar.YEAR));
-        startDate.set(Calendar.MONTH,search.getDate().get(Calendar.MONTH));
-        startDate.set(Calendar.DAY_OF_MONTH,search.getDate().get(Calendar.DAY_OF_MONTH));
-        startDate.set(Calendar.HOUR_OF_DAY,0);
-        startDate.set(Calendar.MINUTE,0);
-        startDate.set(Calendar.SECOND,0);
-        startDate.set(Calendar.MILLISECOND,0);
-        Calendar endDate = (Calendar) startDate.clone();
-        endDate.add(Calendar.HOUR,24);
+        Calendar searchDate = search.getDate();
+        Calendar startDate = null;
+        Calendar endDate = null;
+        if(searchDate != null){
+            startDate = Calendar.getInstance();
+            startDate.set(Calendar.YEAR,search.getDate().get(Calendar.YEAR));
+            startDate.set(Calendar.MONTH,search.getDate().get(Calendar.MONTH));
+            startDate.set(Calendar.DAY_OF_MONTH,search.getDate().get(Calendar.DAY_OF_MONTH));
+            startDate.set(Calendar.HOUR_OF_DAY,0);
+            startDate.set(Calendar.MINUTE,0);
+            startDate.set(Calendar.SECOND,0);
+            startDate.set(Calendar.MILLISECOND,0);
+            endDate = (Calendar) startDate.clone();
+            endDate.add(Calendar.HOUR,24);
+        }
         return app.getImageDb().imageDao().search(search.getTitle(), search.getDescription(), startDate, endDate);
     }
 }
