@@ -102,6 +102,24 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/coordinates" />
+
+                <TextView
+                    android:id="@+id/fstop"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/coordinates"
+                    android:layout_centerVertical="true"
+                    android:maxLines="3"
+                    android:padding="8dp"
+                    android:text="@{`f/`+image.getFstop()}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="#444"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/date" />
             </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.CardView>
     </ScrollView>

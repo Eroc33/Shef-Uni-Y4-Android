@@ -4,10 +4,12 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 import android.database.Cursor;
+import android.media.ExifInterface;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +37,9 @@ public class Image {
     private final String description;
     @TypeConverters(Converters.class)
     private final Calendar date;
+    private final int iso;
+    private final double aperture;
+    private final double focalLength;
 
     public Image(@NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, Calendar date) {
         this.path = path;
@@ -44,6 +49,20 @@ public class Image {
         this.longitude = longitude;
         this.description = description;
         this.date = date;
+        int iso = 0;
+        double aperture = 0.0;
+        double focalLength = 0.0;
+        try {
+            ExifInterface exif = new ExifInterface(path);
+            iso = exif.getAttributeInt(ExifInterface.TAG_ISO, 0);
+            aperture = exif.getAttributeDouble(ExifInterface.TAG_APERTURE, 0.0);
+            focalLength = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0.0);
+        }catch (IOException e){
+            Log.w(TAG,String.format("Couldn't get exif for file '%s'. It may have been deleted.",path));
+        }
+        this.iso = iso;
+        this.aperture = aperture;
+        this.focalLength = focalLength;
     }
 
     public static Image fromCursor(Cursor cursor, String thumbnailPath) {
@@ -58,6 +77,22 @@ public class Image {
                 cursor.getString(5),
                 cal
         );
+    }
+
+    public int getIso() {
+        return iso;
+    }
+
+    public double getAperture() {
+        return aperture;
+    }
+
+    public double getFocalLength() {
+        return focalLength;
+    }
+
+    public double getFstop(){
+        return focalLength/aperture;
     }
 
     @NonNull
