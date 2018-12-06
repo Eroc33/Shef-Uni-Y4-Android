@@ -9,8 +9,10 @@ import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -48,9 +50,10 @@ public class ImageScannerService extends IntentService {
         super("Image Scanner Service");
     }
 
-    public static void scan_all(Context context) {
+    public static void scan_all(Context context, ResultReceiver receiver) {
         Intent serviceIntent = new Intent(context, ImageScannerService.class);
         serviceIntent.setAction(ACTION_SCAN_ALL);
+        serviceIntent.putExtra("onScanComplete",receiver);
         context.startService(serviceIntent);
     }
 
@@ -84,6 +87,12 @@ public class ImageScannerService extends IntentService {
             return;
         }
         if(action.equals(ACTION_SCAN_ALL)){
+            ResultReceiver onScanComplete = null;
+            if(intent.hasExtra("onScanComplete")){
+                onScanComplete = intent.getParcelableExtra("onScanComplete");
+            }else{
+                Log.w(TAG,"No onScanComplete callback");
+            }
             ContentObserver contentObserver = new ImageContentObserver(this);
             for (Uri uri : STORAGE_URIS) {
                 if (uri == MediaStore.Images.Media.EXTERNAL_CONTENT_URI &&
@@ -104,6 +113,8 @@ public class ImageScannerService extends IntentService {
                 }
                 contentResolver.registerContentObserver(uri, true, contentObserver);
             }
+            Log.d(TAG,"Completed request ACTION_SCAN_ALL");
+            onScanComplete.send(0,new Bundle());
         }else if(action.equals(ACTION_LOAD_ONE)){
             Uri uri = intent.getParcelableExtra(LOAD_URI);
             if(uri == null){

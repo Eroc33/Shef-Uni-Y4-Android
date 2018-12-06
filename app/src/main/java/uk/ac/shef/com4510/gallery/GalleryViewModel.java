@@ -3,6 +3,7 @@ package uk.ac.shef.com4510.gallery;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -15,6 +16,8 @@ public class GalleryViewModel extends AndroidViewModel {
     private final ImageRepository imageRepository;
 
     private LiveData<List<Image>> images;
+
+    public final MutableLiveData<Boolean> scanningImages = new MutableLiveData<>();
 
     public GalleryViewModel(@NonNull Application application) {
         super(application);

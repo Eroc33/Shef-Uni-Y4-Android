@@ -62,12 +62,18 @@ public class Image {
         int iso = 0;
         double fstop = 0.0;
         double focalLength = 0.0;
+        double latitude = cursor.getInt(3);
+        double longitude = cursor.getInt(4);
         try {
             ExifInterface exif = new ExifInterface(path);
             iso = exif.getAttributeInt(ExifInterface.TAG_ISO, 0);
             //According to the exif standard ApertureValue is the fstop value
             fstop = exif.getAttributeDouble(ExifInterface.TAG_APERTURE, 0.0);
             focalLength = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0.0);
+            if(latitude == 0.0 || longitude == 0.0){
+                latitude = exif.getAttributeDouble(ExifInterface.TAG_GPS_LATITUDE,0.0);
+                longitude = exif.getAttributeDouble(ExifInterface.TAG_GPS_LONGITUDE,0.0);
+            }
         }catch (IOException e){
             Log.w(TAG,String.format("Couldn't get exif for file '%s'. It may have been deleted.",path));
         }
@@ -75,8 +81,8 @@ public class Image {
                 path,
                 thumbnailPath,
                 cursor.getString(2),
-                cursor.getDouble(3),
-                cursor.getDouble(4),
+                latitude,
+                longitude,
                 cursor.getString(5),
                 cal,
                 iso,
