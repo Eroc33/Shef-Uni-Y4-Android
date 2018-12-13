@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.navigation.Navigation;
 import uk.ac.shef.com4510.ImageScannerService;
@@ -58,11 +60,17 @@ public class GalleryFragment
         binding.setLifecycleOwner(this);
         binding.setAdapterProvider(this);
         binding.setActions(this);
-        Search search = getArguments().getParcelable("search");
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
+        Search search = getArguments().getParcelable("search");
         if (search != null) {
             viewModel.applySearch(search);
+        }else{
+            List<String> exactPaths = getArguments().getStringArrayList("showExact");
+            if(exactPaths != null){
+                viewModel.withExactImages(exactPaths);
+            }
         }
+
         binding.setViewModel(viewModel);
         binding.executePendingBindings();
 

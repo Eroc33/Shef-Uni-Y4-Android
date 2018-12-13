@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 
 @Dao
+@TypeConverters(Converters.class)
 public abstract class ImageDao {
     @Query("SELECT EXISTS(SELECT * FROM image WHERE path = :path)")
     public abstract LiveData<Boolean> contains(String path);
@@ -21,9 +22,6 @@ public abstract class ImageDao {
     @Query("SELECT EXISTS(SELECT * FROM image WHERE path = :path)")
     public abstract boolean containsSync(String path);
 
-    @Query("SELECT path FROM image WHERE path IN (:paths)")
-    public abstract List<String> existingSync(String... paths);
-
     @Insert
     public abstract long[] insertSync(Image... image);
 
@@ -33,10 +31,12 @@ public abstract class ImageDao {
     @Query("SELECT * FROM image where path = :path")
     public abstract LiveData<Image> getImage(String path);
 
-    @TypeConverters(Converters.class)
     @Query("SELECT * FROM image where (title LIKE :title OR :title IS NULL) AND (description LIKE :description OR :description IS NULL) AND ((date BETWEEN :startDate AND :endDate) OR (:startDate IS NULL OR :endDate IS NULL))")
     public abstract LiveData<List<Image>> search(String title, String description, Calendar startDate, Calendar endDate);
 
     @Update
     public abstract void updateSync(Image image);
+
+    @Query("SELECT * FROM image where path in (:paths)")
+    public abstract LiveData<List<Image>> findAll(List<String> paths);
 }

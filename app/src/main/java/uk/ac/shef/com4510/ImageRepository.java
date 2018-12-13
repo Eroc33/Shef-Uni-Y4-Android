@@ -49,4 +49,8 @@ public class ImageRepository {
     public void update(Image image) {
         AsyncTask.execute(()-> app.getImageDb().imageDao().updateSync(image));
     }
+
+    public LiveData<List<Image>> findExact(List<String> paths) {
+        return app.getImageDb().imageDao().findAll(paths);
+    }
 }

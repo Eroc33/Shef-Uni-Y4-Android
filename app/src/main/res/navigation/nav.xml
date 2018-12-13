@@ -19,6 +19,9 @@
         <argument
             android:name="search"
             app:argType="reference" />
+        <argument
+            android:name="showExact"
+            app:argType="reference" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -35,6 +38,9 @@
         <action
             android:id="@+id/action_mapFragment_to_detailsActivity"
             app:destination="@id/detailsActivity" />
+        <action
+            android:id="@+id/action_mapFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
     </fragment>
     <activity
         android:id="@+id/cameraActivity"

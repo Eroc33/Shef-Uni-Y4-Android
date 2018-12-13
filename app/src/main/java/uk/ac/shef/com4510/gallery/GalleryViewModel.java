@@ -32,4 +32,6 @@ public class GalleryViewModel extends AndroidViewModel {
     public void applySearch(Search search) {
         images = imageRepository.search(search);
     }
+
+    public void withExactImages(List<String> paths){ images = imageRepository.findExact(paths); }
 }

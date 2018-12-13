@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -25,10 +26,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
+import java.util.ArrayList;
+
+import androidx.navigation.Navigation;
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.SingleShotLocationProvider;
 import uk.ac.shef.com4510.data.Image;
@@ -36,7 +41,7 @@ import uk.ac.shef.com4510.details.DetailsActivity;
 
 public class MapFragment extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback,
-            ClusterManager.OnClusterItemClickListener<MapFragment.Cluster> {
+            ClusterManager.OnClusterItemClickListener<MapFragment.Cluster>, ClusterManager.OnClusterClickListener<MapFragment.Cluster> {
 
     @Override
     public boolean onClusterItemClick(Cluster cluster) {
@@ -47,6 +52,19 @@ public class MapFragment extends Fragment
         startActivityIntent.putExtra("imagePath", path);
         context.startActivity(startActivityIntent);
 
+        return true;
+    }
+
+    @Override
+    public boolean onClusterClick(com.google.maps.android.clustering.Cluster<Cluster> cluster) {
+        Bundle bundle = new Bundle();
+        ArrayList<Cluster> clusters = new ArrayList<>(cluster.getItems());
+        ArrayList<String> paths =  new ArrayList<String>(cluster.getSize());
+        for(Cluster c : clusters){
+            paths.add(c.image.getPath());
+        }
+        bundle.putStringArrayList("showExact", paths);
+        Navigation.findNavController(getView()).navigate(R.id.action_mapFragment_to_galleryFragment, bundle);
         return true;
     }
 
@@ -142,6 +160,7 @@ public class MapFragment extends Fragment
         map = googleMap;
         clusterManager = new ClusterManager<>(requireContext(),map);
         clusterManager.setOnClusterItemClickListener(this);
+        clusterManager.setOnClusterClickListener(this);
         map.setOnCameraIdleListener(clusterManager);
         map.setOnMarkerClickListener(clusterManager);
         setMapMarkers();
