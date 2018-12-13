@@ -1,6 +1,7 @@
 package uk.ac.shef.com4510;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -8,8 +9,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 public class SingleShotLocationProvider {
+
+    private static final long LOCATION_LOCK_TIMEOUT = 5000;
 
     public enum LocationReason {NO_FINE_LOCATION, NO_GPS}
 
@@ -29,7 +34,9 @@ public class SingleShotLocationProvider {
                 Criteria criteria = new Criteria();
                 criteria.setAccuracy(Criteria.ACCURACY_FINE);
 
-                locationManager.requestSingleUpdate(criteria, new LocationListener() {
+                String bestProvider = locationManager.getBestProvider(criteria,false);
+
+                LocationListener locationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
                         callback.onLocationAvailable(location);
@@ -44,7 +51,14 @@ public class SingleShotLocationProvider {
                     @Override
                     public void onProviderDisabled(String provider) { }
 
-                }, null);
+                };
+                Looper myLooper = Looper.myLooper();
+                locationManager.requestSingleUpdate(criteria, locationListener, myLooper);
+                final Handler myHandler = new Handler(myLooper);
+                myHandler.postDelayed(() -> {
+                    locationManager.removeUpdates(locationListener);
+                    callback.onLocationAvailable(locationManager.getLastKnownLocation(bestProvider));
+                }, LOCATION_LOCK_TIMEOUT);
             } else {
                 callback.onLocationUnavailable(LocationReason.NO_FINE_LOCATION);
             }

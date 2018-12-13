@@ -2,6 +2,7 @@ package uk.ac.shef.com4510;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.os.AsyncTask;
 
 import java.util.Calendar;
 import java.util.List;
@@ -43,5 +44,9 @@ public class ImageRepository {
             endDate.add(Calendar.HOUR,24);
         }
         return app.getImageDb().imageDao().search(search.getTitle(), search.getDescription(), startDate, endDate);
+    }
+
+    public void update(Image image) {
+        AsyncTask.execute(()-> app.getImageDb().imageDao().updateSync(image));
     }
 }

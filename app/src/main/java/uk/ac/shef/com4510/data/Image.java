@@ -40,9 +40,10 @@ public class Image {
     private final int iso;
     private final double fstop;
     private final double focalLength;
+    private final boolean hasExif;
 
     public Image(@NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, Calendar date, int iso, double fstop
-    , double focalLength) {
+    , double focalLength, boolean hasExif) {
         this.path = path;
         this.thumbnailPath = thumbnailPath;
         this.title = title;
@@ -53,42 +54,39 @@ public class Image {
         this.iso = iso;
         this.fstop = fstop;
         this.focalLength = focalLength;
+        this.hasExif = hasExif;
     }
 
     public static Image fromCursor(Cursor cursor, String thumbnailPath) {
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(cursor.getLong(5) * 1000L);
-        String path = cursor.getString(0);
-        int iso = 0;
-        double fstop = 0.0;
-        double focalLength = 0.0;
-        double latitude = cursor.getInt(3);
-        double longitude = cursor.getInt(4);
-        try {
-            ExifInterface exif = new ExifInterface(path);
-            iso = exif.getAttributeInt(ExifInterface.TAG_ISO, 0);
-            //According to the exif standard ApertureValue is the fstop value
-            fstop = exif.getAttributeDouble(ExifInterface.TAG_APERTURE, 0.0);
-            focalLength = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0.0);
-            if(latitude == 0.0 || longitude == 0.0){
-                latitude = exif.getAttributeDouble(ExifInterface.TAG_GPS_LATITUDE,0.0);
-                longitude = exif.getAttributeDouble(ExifInterface.TAG_GPS_LONGITUDE,0.0);
-            }
-        }catch (IOException e){
-            Log.w(TAG,String.format("Couldn't get exif for file '%s'. It may have been deleted.",path));
-        }
+        cal.setTimeInMillis(cursor.getLong(6) * 1000L);
         return new Image(
-                path,
+                cursor.getString(0),
                 thumbnailPath,
                 cursor.getString(2),
-                latitude,
-                longitude,
+                cursor.getInt(3),
+                cursor.getInt(4),
                 cursor.getString(5),
                 cal,
-                iso,
-                fstop,
-                focalLength
+                0,
+                0,
+                0,
+                false
         );
+    }
+
+    public Image withExif(){
+        try {
+            ExifInterface exif = new ExifInterface(path);
+            int iso = exif.getAttributeInt(ExifInterface.TAG_ISO, 0);
+            //According to the exif standard ApertureValue is the fstop value
+            double fstop = exif.getAttributeDouble(ExifInterface.TAG_APERTURE, 0.0);
+            double focalLength = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0.0);
+            return new Image(this.path, this.thumbnailPath, this.title, this.latitude,this.longitude,this.description, this.date, iso, fstop,focalLength, true);
+        }catch (IOException e){
+            Log.w(TAG,String.format("Couldn't get exif for file '%s'. It may have been deleted.",path));
+            return null;
+        }
     }
 
     public int getIso() {
@@ -149,5 +147,9 @@ public class Image {
         }else{
             return path;
         }
+    }
+
+    public boolean hasExif() {
+        return hasExif;
     }
 }

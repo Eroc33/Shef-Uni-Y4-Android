@@ -5,6 +5,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.TypeConverters;
+import android.arch.persistence.room.Update;
 
 import java.util.Calendar;
 import java.util.List;
@@ -35,4 +36,7 @@ public abstract class ImageDao {
     @TypeConverters(Converters.class)
     @Query("SELECT * FROM image where (title LIKE :title OR :title IS NULL) AND (description LIKE :description OR :description IS NULL) AND ((date BETWEEN :startDate AND :endDate) OR (:startDate IS NULL OR :endDate IS NULL))")
     public abstract LiveData<List<Image>> search(String title, String description, Calendar startDate, Calendar endDate);
+
+    @Update
+    public abstract void updateSync(Image image);
 }

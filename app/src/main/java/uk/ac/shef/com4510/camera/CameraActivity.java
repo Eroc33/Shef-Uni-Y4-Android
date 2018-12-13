@@ -2,6 +2,8 @@ package uk.ac.shef.com4510.camera;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -25,6 +27,9 @@ import java.util.Locale;
 
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.SingleShotLocationProvider;
+import uk.ac.shef.com4510.support.MediaStoreHelper;
+
+import static android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "CameraActivity";
@@ -40,8 +45,10 @@ public class CameraActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION},
                     PermissionRequestCode.CAMERA);
         } else {
             openCamera();
@@ -83,25 +90,13 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void savePhoto(File file) {
-        try {
-            MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), file.getName(), file.getName());
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.cannot_save_photo, Toast.LENGTH_SHORT).show();
-        } finally {
-            finish();
-        }
+        savePhoto(file,0,0);
     }
 
     private void savePhoto(File file, double lat, double lng) {
+        Log.i(TAG,"save photo with latlng");
         try {
-            String lat_s = Double.toString(lat);
-            String lng_s = Double.toString(lng);
-            ExifInterface exif = new ExifInterface(file.getName());
-            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, lat_s);
-            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, lng_s);
-            exif.saveAttributes();
-            savePhoto(file);
+            MediaStoreHelper.insertImageWithLocation(getContentResolver(), file.getCanonicalPath(), file.getName(), file.getName(), lat,lng);
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), R.string.cannot_save_photo, Toast.LENGTH_SHORT).show();
@@ -128,7 +123,7 @@ public class CameraActivity extends AppCompatActivity {
                                 new SingleShotLocationProvider.LocationCallback() {
                                     @Override
                                     public void onLocationAvailable(Location location) {
-                                        savePhoto(file, location.getLongitude(), location.getLatitude());
+                                        savePhoto(file, location.getLatitude(), location.getLongitude());
                                     }
 
                                     @Override
@@ -136,9 +131,9 @@ public class CameraActivity extends AppCompatActivity {
                                         savePhoto(file);
                                     }
                                 });
+                    }else{
+                        savePhoto(file);
                     }
-
-                    savePhoto(file);
                 } else {
                     finish();
                 }

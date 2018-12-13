@@ -32,6 +32,10 @@ class DetailsViewModel extends AndroidViewModel {
             if (newImage == null) {
                 return;
             }
+            if(!newImage.hasExif()){
+                newImage = newImage.withExif();
+                imageRepository.update(newImage);
+            }
             image.setValue(newImage);
         });
     }
