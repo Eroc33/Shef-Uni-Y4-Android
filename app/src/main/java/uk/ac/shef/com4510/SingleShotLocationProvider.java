@@ -37,9 +37,19 @@ public class SingleShotLocationProvider {
                 String bestProvider = locationManager.getBestProvider(criteria,false);
 
                 LocationListener locationListener = new LocationListener() {
+                    boolean completed = false;
+
+                    private synchronized void locationChanged(Location location){
+                        if(completed){
+                            return;
+                        }
+                        completed = true;
+                        callback.onLocationAvailable(location);
+                    }
+
                     @Override
                     public void onLocationChanged(Location location) {
-                        callback.onLocationAvailable(location);
+                        locationChanged(location);
                     }
 
                     @Override
@@ -57,7 +67,7 @@ public class SingleShotLocationProvider {
                 final Handler myHandler = new Handler(myLooper);
                 myHandler.postDelayed(() -> {
                     locationManager.removeUpdates(locationListener);
-                    callback.onLocationAvailable(locationManager.getLastKnownLocation(bestProvider));
+                    locationListener.onLocationChanged(locationManager.getLastKnownLocation(bestProvider));
                 }, LOCATION_LOCK_TIMEOUT);
             } else {
                 callback.onLocationUnavailable(LocationReason.NO_FINE_LOCATION);
