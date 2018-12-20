@@ -31,6 +31,7 @@
         <activity android:name=".details.DetailsActivity" />
         <activity android:name=".camera.CameraActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".details.EditDetailsActivity" />
 
         <service android:name=".ImageScannerService" />
 

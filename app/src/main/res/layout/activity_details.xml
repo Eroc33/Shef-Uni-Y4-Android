@@ -36,26 +36,23 @@
                     android:id="@+id/thumbnail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/selected_image"
                     android:scaleType="fitCenter"
-                    app:imageAsync="@{image.path}" />
+                    app:imageAsync="@{image.path}"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <fragment
                     android:id="@+id/map"
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_below="@id/thumbnail"
                     app:layout_constraintTop_toBottomOf="@id/thumbnail" />
 
                 <TextView
                     android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/map"
-                    android:layout_centerVertical="true"
                     android:maxLines="3"
                     android:padding="8dp"
                     android:text="@{image.title}"
@@ -68,11 +65,24 @@
                     app:layout_constraintTop_toBottomOf="@+id/map" />
 
                 <TextView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="3"
+                    android:padding="8dp"
+                    android:text="@{image.description}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="#444"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/title" />
+
+                <TextView
                     android:id="@+id/coordinates"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/title"
-                    android:layout_centerVertical="true"
                     android:maxLines="3"
                     android:padding="8dp"
                     android:text="@{coordinateFormatter.format(image.latitude,image.longitude)}"
@@ -83,14 +93,12 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/title" />
+                    app:layout_constraintTop_toBottomOf="@id/description" />
 
                 <TextView
                     android:id="@+id/date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/coordinates"
-                    android:layout_centerVertical="true"
                     android:maxLines="3"
                     android:padding="8dp"
                     android:text="@{image.getDateString(dateFormatter) ?? `Unknown`}"
@@ -107,11 +115,9 @@
                     android:id="@+id/fstop"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/coordinates"
-                    android:layout_centerVertical="true"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`f/`+image.getFstop()}"
+                    android:text="@{image.formatFstop()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -125,11 +131,9 @@
                     android:id="@+id/focalLength"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/coordinates"
-                    android:layout_centerVertical="true"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{``+image.getFocalLength()+`mm`}"
+                    android:text="@{image.formatFocalLength()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -143,11 +147,9 @@
                     android:id="@+id/iso"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/coordinates"
-                    android:layout_centerVertical="true"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`ISO`+image.getIso()}"
+                    android:text="@{image.formatISO()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -156,6 +158,21 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/focalLength" />
+                <TextView
+                    android:id="@+id/shutterSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="3"
+                    android:padding="8dp"
+                    android:text="@{image.formatShutterSpeed()}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="#444"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/iso" />
             </android.support.constraint.ConstraintLayout>
         </ScrollView>
         <android.support.design.widget.FloatingActionButton
