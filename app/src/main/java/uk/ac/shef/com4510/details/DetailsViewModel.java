@@ -10,7 +10,7 @@ import uk.ac.shef.com4510.ImageRepository;
 import uk.ac.shef.com4510.data.Image;
 
 class DetailsViewModel extends AndroidViewModel {
-    private final ImageRepository imageRepository;
+    protected final ImageRepository imageRepository;
     private MediatorLiveData<Image> image = new MediatorLiveData<>();
     private LiveData<Image> imageSource;
 

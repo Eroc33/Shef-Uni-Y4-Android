@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import uk.ac.shef.com4510.data.Image;
+import uk.ac.shef.com4510.support.ObserverUtils;
 
 public class EditDetailsViewModel extends DetailsViewModel {
     final public MutableLiveData<String> title = new MutableLiveData<>();
@@ -12,11 +13,18 @@ public class EditDetailsViewModel extends DetailsViewModel {
 
     public EditDetailsViewModel(@NonNull Application application) {
         super(application);
-        Image image = getImage().getValue();
-        title.setValue(image.getTitle());
-        description.setValue(image.getDescription());
+        ObserverUtils.observeOneshot(getImage(),(image)->{
+            title.setValue(image.getTitle());
+            description.setValue(image.getDescription());
+        });
     }
 
-    public String getTitle() { return title.getValue(); }
-    public String getDescription() { return description.getValue(); }
+    public void commitEdit(){
+        Image image = getImage().getValue();
+        if (image == null) {
+            //TODO: handle this here, or catch it where commitEdit is called, though it should likely never occur
+            throw new NullPointerException("image is null in commitEdit");
+        }
+        imageRepository.update(image.withTitleAndDescription(title.getValue(),description.getValue()));
+    }
 }

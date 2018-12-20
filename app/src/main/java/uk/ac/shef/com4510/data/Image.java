@@ -5,8 +5,6 @@ import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 import android.database.Cursor;
 import android.media.ExifInterface;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -42,10 +40,11 @@ public class Image {
     private final int iso;
     private final double fstop;
     private final double focalLength;
+    private final double shutterSpeed;
     private final boolean hasExif;
 
     public Image(@NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, Calendar date, int iso, double fstop
-    , double focalLength, boolean hasExif) {
+    , double focalLength, double shutterSpeed, boolean hasExif) {
         this.path = path;
         this.thumbnailPath = thumbnailPath;
         this.title = title;
@@ -56,6 +55,7 @@ public class Image {
         this.iso = iso;
         this.fstop = fstop;
         this.focalLength = focalLength;
+        this.shutterSpeed = shutterSpeed;
         this.hasExif = hasExif;
     }
 
@@ -73,6 +73,7 @@ public class Image {
                 0,
                 0,
                 0,
+                0,
                 false
         );
     }
@@ -84,11 +85,40 @@ public class Image {
             //According to the exif standard ApertureValue is the fstop value
             double fstop = exif.getAttributeDouble(ExifInterface.TAG_APERTURE, 0.0);
             double focalLength = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0.0);
-            return new Image(this.path, this.thumbnailPath, this.title, this.latitude,this.longitude,this.description, this.date, iso, fstop,focalLength, true);
+            double shutterSpeed = exif.getAttributeDouble(ExifInterface.TAG_EXPOSURE_TIME,0);
+            return new Image(
+                    path,
+                    thumbnailPath,
+                    title,
+                    latitude,
+                    longitude,
+                    description,
+                    date,
+                    iso,
+                    fstop,
+                    focalLength,
+                    shutterSpeed,
+                    true);
         }catch (IOException e){
             Log.w(TAG,String.format("Couldn't get exif for file '%s'. It may have been deleted.",path));
             return null;
         }
+    }
+
+    public Image withTitleAndDescription(String title, String description){
+        return new Image(
+                path,
+                thumbnailPath,
+                title,
+                latitude,
+                longitude,
+                description,
+                date,
+                iso,
+                fstop,
+                focalLength,
+                shutterSpeed,
+                true);
     }
 
     public int getIso() {
@@ -151,7 +181,48 @@ public class Image {
         }
     }
 
+    public double getShutterSpeed() {
+        return shutterSpeed;
+    }
+
     public boolean hasExif() {
         return hasExif;
+    }
+
+    public String formatFstop(){
+        if(fstop != 0){
+            return String.format("f/%f",fstop);
+        }else{
+            return "";
+        }
+    }
+
+    public String formatISO(){
+        if(iso != 0){
+            return String.format("ISO%d",iso);
+        }else{
+            return "";
+        }
+    }
+
+    public String formatFocalLength(){
+        if(focalLength != 0){
+            return String.format("%fmm",focalLength);
+        }else{
+            return "";
+        }
+    }
+
+    public String formatShutterSpeed(){
+        if(shutterSpeed == 0.0){
+            return "";
+        }
+        if(shutterSpeed >= 1){
+            return String.format("%ds",(long)shutterSpeed);
+        }else{
+            long numer = 1;
+            long denom = (long)(1/shutterSpeed);
+            return String.format("%d/%ds",numer,denom);
+        }
     }
 }
