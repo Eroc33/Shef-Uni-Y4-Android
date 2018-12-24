@@ -4,6 +4,8 @@ import android.Manifest;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.navigation.Navigation;
@@ -27,6 +28,7 @@ import uk.ac.shef.com4510.ImageScannerService;
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.databinding.GalleryFragmentBinding;
 import uk.ac.shef.com4510.search.Search;
+import uk.ac.shef.com4510.support.RecyclerViewFastScrollerThumbHack;
 import uk.ac.shef.com4510.support.databinding.RecyclerViewAdapterProvider;
 
 public class GalleryFragment
@@ -70,6 +72,13 @@ public class GalleryFragment
                 viewModel.withExactImages(exactPaths);
             }
         }
+
+        Resources resources = getResources();
+        new RecyclerViewFastScrollerThumbHack(binding.galleryRecycler,(StateListDrawable)resources.getDrawable(R.drawable.scroll_thumb,null), resources.getDrawable(R.drawable.scroll_track,null),
+                (StateListDrawable)resources.getDrawable(R.drawable.scroll_thumb,null), resources.getDrawable(R.drawable.scroll_track,null),
+                resources.getDimensionPixelSize(android.support.v7.recyclerview.R.dimen.fastscroll_default_thickness),
+                resources.getDimensionPixelSize(android.support.v7.recyclerview.R.dimen.fastscroll_minimum_range),
+                resources.getDimensionPixelOffset(android.support.v7.recyclerview.R.dimen.fastscroll_margin));
 
         binding.setViewModel(viewModel);
         binding.executePendingBindings();

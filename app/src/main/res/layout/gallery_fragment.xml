@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:adapter="@{adapterProvider.adapter}"
-            app:fastScrollEnabled="true"
+            app:fastScrollEnabled="false"
             app:fastScrollHorizontalThumbDrawable="@drawable/scroll_thumb"
             app:fastScrollHorizontalTrackDrawable="@drawable/scroll_track"
             app:fastScrollVerticalThumbDrawable="@drawable/scroll_thumb"
