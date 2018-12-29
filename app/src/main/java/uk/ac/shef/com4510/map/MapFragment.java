@@ -163,6 +163,7 @@ public class MapFragment extends Fragment
         clusterManager.setOnClusterClickListener(this);
         map.setOnCameraIdleListener(clusterManager);
         map.setOnMarkerClickListener(clusterManager);
+        map.getUiSettings().setMapToolbarEnabled(false);
         setMapMarkers();
     }
 

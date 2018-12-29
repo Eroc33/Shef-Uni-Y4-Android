@@ -50,17 +50,18 @@ public class DetailsActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap map) {
         viewModel.getImage().observe(this, image -> {
             double lat = image.getLatitude();
             double lng = image.getLongitude();
             LatLng pos = new LatLng(lat,lng);
             MarkerOptions options = new MarkerOptions().position(pos);
 
-            googleMap.addMarker(options);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14.0f));
-            googleMap.getUiSettings().setScrollGesturesEnabled(false);
-            googleMap.getUiSettings().setZoomGesturesEnabled(false);
+            map.addMarker(options);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14.0f));
+            map.getUiSettings().setScrollGesturesEnabled(false);
+            map.getUiSettings().setZoomGesturesEnabled(false);
+            map.getUiSettings().setMapToolbarEnabled(false);
         });
     }
 
