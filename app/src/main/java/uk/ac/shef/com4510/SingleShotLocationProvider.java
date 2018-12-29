@@ -70,10 +70,10 @@ public class SingleShotLocationProvider {
                     locationListener.onLocationChanged(locationManager.getLastKnownLocation(bestProvider));
                 }, LOCATION_LOCK_TIMEOUT);
             } else {
-                callback.onLocationUnavailable(LocationReason.NO_FINE_LOCATION);
+                callback.onLocationUnavailable(LocationReason.NO_GPS);
             }
         } else {
-            callback.onLocationUnavailable(LocationReason.NO_GPS);
+            callback.onLocationUnavailable(LocationReason.NO_FINE_LOCATION);
         }
     }
 }
