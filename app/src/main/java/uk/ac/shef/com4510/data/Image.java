@@ -8,8 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.media.ExifInterface;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;

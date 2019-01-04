@@ -4,8 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.support.ObserverUtils;
 
