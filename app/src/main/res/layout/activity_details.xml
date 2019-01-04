@@ -55,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{image.title}"
+                    android:text="@{`Title: ` + image.title}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{image.description}"
+                    android:text="@{`Description: ` + image.description}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -101,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{image.getDateString(dateFormatter) ?? `Unknown`}"
+                    android:text="@{`Date: ` + image.getDateString(dateFormatter)}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -117,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{image.formatFstop()}"
+                    android:text="@{`Fstop: ` + image.formatFstop()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{image.formatFocalLength()}"
+                    android:text="@{`Focal Length: ` + image.formatFocalLength()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -149,7 +149,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{image.formatISO()}"
+                    android:text="@{`Iso: ` + image.formatISO()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -158,13 +158,14 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/focalLength" />
+
                 <TextView
                     android:id="@+id/shutterSpeed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{image.formatShutterSpeed()}"
+                    android:text="@{`Shutter Speed: ` + image.formatShutterSpeed()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -173,21 +174,21 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/iso" />
+
             </android.support.constraint.ConstraintLayout>
         </ScrollView>
 
-        <Button
-            android:id="@+id/fab_search"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="Edit"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_edit_white_24dp"
+            app:backgroundTint="@color/colorAccent"
+            app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             android:onClick="@{(btn) -> actions.edit()}"/>
-
     </android.support.constraint.ConstraintLayout>
 </layout>

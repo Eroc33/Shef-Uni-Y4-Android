@@ -43,17 +43,17 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <Button
-            android:id="@+id/fab_search"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="Save"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_save_white_24dp"
+            app:backgroundTint="@color/colorAccent"
+            app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             android:onClick="@{(btn) -> actions.commitEdit()}"/>
 
     </android.support.constraint.ConstraintLayout>

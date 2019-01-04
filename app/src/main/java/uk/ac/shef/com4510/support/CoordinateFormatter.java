@@ -12,6 +12,10 @@ public class CoordinateFormatter {
     }
 
     public String format(double latitude, double longitude) {
-        return resources.getString(R.string.coordinate_format_string, latitude, longitude);
+        if (latitude == 0.0 && longitude == 0.0) {
+            return "Coordinates: Unknown";
+        } else {
+            return resources.getString(R.string.coordinate_format_string, latitude, longitude);
+        }
     }
 }
