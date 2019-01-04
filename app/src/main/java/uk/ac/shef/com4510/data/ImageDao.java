@@ -4,14 +4,11 @@ import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
-import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
 
-import java.util.Calendar;
 import java.util.List;
 
 @Dao
-@TypeConverters(Converters.class)
 public abstract class ImageDao {
     @Query("SELECT EXISTS(SELECT * FROM image WHERE path = :path)")
     public abstract LiveData<Boolean> contains(String path);
@@ -23,6 +20,9 @@ public abstract class ImageDao {
     public abstract boolean containsSync(String path);
 
     @Insert
+    public abstract long[] insertSync(List<Image> image);
+
+    @Insert
     public abstract long[] insertSync(Image... image);
 
     @Query("SELECT * FROM image")
@@ -31,8 +31,8 @@ public abstract class ImageDao {
     @Query("SELECT * FROM image where path = :path")
     public abstract LiveData<Image> getImage(String path);
 
-    @Query("SELECT * FROM image where (title LIKE :title OR :title IS NULL) AND (description LIKE :description OR :description IS NULL) AND ((date BETWEEN :startDate AND :endDate) OR (:startDate IS NULL OR :endDate IS NULL))")
-    public abstract LiveData<List<Image>> search(String title, String description, Calendar startDate, Calendar endDate);
+    @Query("SELECT * FROM image where (title LIKE :title OR :title IS NULL) AND (description LIKE :description OR :description IS NULL) AND ((timestamp BETWEEN :startTimeStamp AND :endTimeStamp) OR (:startTimeStamp == 0 OR :endTimeStamp == 0))")
+    public abstract LiveData<List<Image>> search(String title, String description, long startTimeStamp, long endTimeStamp);
 
     @Update
     public abstract void updateSync(Image image);

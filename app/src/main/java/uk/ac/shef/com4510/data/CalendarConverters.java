@@ -1,18 +1,15 @@
 package uk.ac.shef.com4510.data;
 
-import android.arch.persistence.room.TypeConverter;
-
 import java.util.Calendar;
 
-public final class Converters {
+public final class CalendarConverters {
 
     //private as instantiating this makes no sense
-    private Converters() {
+    private CalendarConverters() {
     }
 
-    @TypeConverter
-    public static Calendar calendarFromUnixTimestamp(Long seconds) {
-        if (seconds == null) {
+    public static Calendar calendarFromUnixTimestamp(long seconds) {
+        if (seconds == 0) {
             return null;
         }
         Calendar cal = Calendar.getInstance();
@@ -20,10 +17,9 @@ public final class Converters {
         return cal;
     }
 
-    @TypeConverter
-    public static Long calendarToUnixTimestamp(Calendar cal) {
+    public static long calendarToUnixTimestamp(Calendar cal) {
         if (cal == null) {
-            return null;
+            return 0;
         } else {
             return cal.getTimeInMillis() / 1000L;
         }

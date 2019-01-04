@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import java.util.Calendar;
 import java.util.List;
 
+import uk.ac.shef.com4510.data.CalendarConverters;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.search.Search;
 
@@ -43,7 +44,7 @@ public class ImageRepository {
             endDate = (Calendar) startDate.clone();
             endDate.add(Calendar.HOUR,24);
         }
-        return app.getImageDb().imageDao().search(search.getTitle(), search.getDescription(), startDate, endDate);
+        return app.getImageDb().imageDao().search(search.getTitle(), search.getDescription(), CalendarConverters.calendarToUnixTimestamp(startDate), CalendarConverters.calendarToUnixTimestamp(endDate));
     }
 
     public void update(Image image) {

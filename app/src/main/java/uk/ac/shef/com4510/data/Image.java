@@ -2,11 +2,10 @@ package uk.ac.shef.com4510.data;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-import android.arch.persistence.room.TypeConverters;
 import android.database.Cursor;
-import android.media.ExifInterface;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.media.ExifInterface;
 import android.util.Log;
 
 import java.io.IOException;
@@ -35,15 +34,14 @@ public class Image {
     private final double latitude;
     private final double longitude;
     private final String description;
-    @TypeConverters(Converters.class)
-    private final Calendar date;
+    private final long timestamp;
     private final int iso;
     private final double fstop;
     private final double focalLength;
     private final double shutterSpeed;
     private final boolean hasExif;
 
-    public Image(@NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, Calendar date, int iso, double fstop
+    public Image(@NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, long timestamp, int iso, double fstop
     , double focalLength, double shutterSpeed, boolean hasExif) {
         this.path = path;
         this.thumbnailPath = thumbnailPath;
@@ -51,7 +49,7 @@ public class Image {
         this.latitude = latitude;
         this.longitude = longitude;
         this.description = description;
-        this.date = date;
+        this.timestamp = timestamp;
         this.iso = iso;
         this.fstop = fstop;
         this.focalLength = focalLength;
@@ -60,8 +58,6 @@ public class Image {
     }
 
     public static Image fromCursor(Cursor cursor, String thumbnailPath) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(cursor.getLong(6) * 1000L);
         return new Image(
                 cursor.getString(0),
                 thumbnailPath,
@@ -69,7 +65,7 @@ public class Image {
                 cursor.getDouble(3),
                 cursor.getDouble(4),
                 cursor.getString(5),
-                cal,
+                cursor.getLong(6),
                 0,
                 0,
                 0,
@@ -81,9 +77,9 @@ public class Image {
     public Image withExif(){
         try {
             ExifInterface exif = new ExifInterface(path);
-            int iso = exif.getAttributeInt(ExifInterface.TAG_ISO, 0);
+            int iso = exif.getAttributeInt(ExifInterface.TAG_ISO_SPEED, 0);
             //According to the exif standard ApertureValue is the fstop value
-            double fstop = exif.getAttributeDouble(ExifInterface.TAG_APERTURE, 0.0);
+            double fstop = exif.getAttributeDouble(ExifInterface.TAG_APERTURE_VALUE, 0.0);
             double focalLength = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0.0);
             double shutterSpeed = exif.getAttributeDouble(ExifInterface.TAG_EXPOSURE_TIME,0);
             return new Image(
@@ -93,7 +89,7 @@ public class Image {
                     latitude,
                     longitude,
                     description,
-                    date,
+                    timestamp,
                     iso,
                     fstop,
                     focalLength,
@@ -113,7 +109,7 @@ public class Image {
                 latitude,
                 longitude,
                 description,
-                date,
+                timestamp,
                 iso,
                 fstop,
                 focalLength,
@@ -154,11 +150,16 @@ public class Image {
         return description;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
     public Calendar getDate() {
-        return date;
+        return CalendarConverters.calendarFromUnixTimestamp(timestamp);
     }
 
     public String getDateString(DateFormat formatter){
+        Calendar date = getDate();
         if(date == null){
             return null;
         }

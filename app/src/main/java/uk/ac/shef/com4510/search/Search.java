@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.Calendar;
 
-import uk.ac.shef.com4510.data.Converters;
+import uk.ac.shef.com4510.data.CalendarConverters;
 
 public class Search implements Parcelable {
     public static final Creator<Search> CREATOR = new Creator<Search>() {
@@ -33,7 +33,7 @@ public class Search implements Parcelable {
         title = in.readString();
         description = in.readString();
         if (in.readByte() == 1) {
-            date = Converters.calendarFromUnixTimestamp(in.readLong());
+            date = CalendarConverters.calendarFromUnixTimestamp(in.readLong());
         } else {
             date = null;
         }
@@ -67,7 +67,7 @@ public class Search implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
         dest.writeString(description);
-        Long timeStamp = Converters.calendarToUnixTimestamp(date);
+        Long timeStamp = CalendarConverters.calendarToUnixTimestamp(date);
         if (timeStamp != null) {
             dest.writeByte((byte) 1);
             dest.writeLong(timeStamp);

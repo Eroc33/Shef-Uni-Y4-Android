@@ -10,20 +10,15 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.io.File;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.spi.FileSystemProvider;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import uk.ac.shef.com4510.data.Image;
@@ -37,6 +32,7 @@ public class ImageScannerService extends IntentService {
 
     private static final Set<Uri> STORAGE_URIS;
     private static final String TAG = ImageScannerService.class.getCanonicalName();
+    public static final int BATCH_SIZE = 512;
 
     static {
         STORAGE_URIS = new HashSet<>();
@@ -53,7 +49,7 @@ public class ImageScannerService extends IntentService {
     public static void scan_all(Context context, ResultReceiver receiver) {
         Intent serviceIntent = new Intent(context, ImageScannerService.class);
         serviceIntent.setAction(ACTION_SCAN_ALL);
-        serviceIntent.putExtra("onScanComplete",receiver);
+        serviceIntent.putExtra("scanStatusUpdate",receiver);
         context.startService(serviceIntent);
     }
 
@@ -87,9 +83,9 @@ public class ImageScannerService extends IntentService {
             return;
         }
         if(action.equals(ACTION_SCAN_ALL)){
-            ResultReceiver onScanComplete = null;
-            if(intent.hasExtra("onScanComplete")){
-                onScanComplete = intent.getParcelableExtra("onScanComplete");
+            ResultReceiver scanStatusUpdate = null;
+            if(intent.hasExtra("scanStatusUpdate")){
+                scanStatusUpdate = intent.getParcelableExtra("scanStatusUpdate");
             }else{
                 Log.w(TAG,"No onScanComplete callback");
             }
@@ -101,26 +97,53 @@ public class ImageScannerService extends IntentService {
                 }
                 boolean isExternal = uri==MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                 try (Cursor cursor = contentResolver.query(uri, Image.FIELDS, null, null, null, null)) {
+                    long total =  cursor.getCount();
+                    long count = 0;
                     int pathIndex = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
                     ImageDao imageDatabase = getImageDao();
                     cursor.moveToNext();
+
+                    //we batch image insertions to avoid rooms using really high amounts of memory
+                    List<Image> batch = new ArrayList<>(BATCH_SIZE);
+
+                    //this won't insert anything, just send a progress update to the ui thread
+                    saveImageBatch(scanStatusUpdate, total, count, imageDatabase, batch, isExternal);
+
                     while (!cursor.isAfterLast()) {
                         if (!imageDatabase.containsSync(cursor.getString(pathIndex))) {
-                            imageDatabase.insertSync(Image.fromCursor(cursor,thumbnailFromCursor(cursor,isExternal)));
+                            batch.add(Image.fromCursor(cursor,thumbnailFromCursor(cursor,isExternal)));
+                        }
+                        count += 1;
+                        if (batch.size() == BATCH_SIZE){
+                            saveImageBatch(scanStatusUpdate, total, count, imageDatabase, batch, isExternal);
                         }
                         cursor.moveToNext();
                     }
+                    saveImageBatch(scanStatusUpdate, total, count, imageDatabase, batch, isExternal);
                 }
                 contentResolver.registerContentObserver(uri, true, contentObserver);
             }
             Log.d(TAG,"Completed request ACTION_SCAN_ALL");
-            onScanComplete.send(0,new Bundle());
         }else if(action.equals(ACTION_LOAD_ONE)){
             Uri uri = intent.getParcelableExtra(LOAD_URI);
             if(uri == null){
                 throw new IllegalArgumentException("LOAD_URI must not be null");
             }
             changed(uri);
+        }
+    }
+
+    private void saveImageBatch(ResultReceiver scanStatusUpdate, long total, long count, ImageDao imageDatabase, List<Image> batch, boolean isExternal) {
+        imageDatabase.insertSync(batch);
+        batch.clear();
+        if( scanStatusUpdate != null) {
+            Bundle bundle = new Bundle();
+            bundle.putLong("total",total);
+            bundle.putLong("count",count);
+            bundle.putInt("stage",isExternal?R.string.external:R.string.internal);
+            scanStatusUpdate.send(0, bundle);
+        }else{
+            Log.d(TAG,"No status callback");
         }
     }
 

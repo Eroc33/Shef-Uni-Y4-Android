@@ -1,12 +1,9 @@
 package uk.ac.shef.com4510.gallery;
 
 import android.Manifest;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,14 +11,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.navigation.Navigation;
@@ -88,8 +83,7 @@ public class GalleryFragment
     }
 
     private void continueSetup() {
-        viewModel.scanningImages.postValue(true);
-        ImageScannerService.scan_all(requireActivity().getApplicationContext(),new ResultReceiver(new ScanCompleteHandler(viewModel)));
+        ImageScannerService.scan_all(requireActivity().getApplicationContext(),new ScanResultReciever(viewModel));
     }
 
     @Override
@@ -103,16 +97,25 @@ public class GalleryFragment
         }
     }
 
-    private static class ScanCompleteHandler extends Handler {
+    private static class ScanResultReciever extends ResultReceiver {
         private WeakReference<GalleryViewModel> viewModelWeakReference;
-        ScanCompleteHandler(GalleryViewModel viewModel) {
+        ScanResultReciever(GalleryViewModel viewModel) {
+            super(null);
             viewModelWeakReference = new WeakReference<>(viewModel);
         }
+
         @Override
-        public void handleMessage(Message msg) {
-            ViewModel vm = viewModelWeakReference.get();
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            GalleryViewModel vm = viewModelWeakReference.get();
+            long count = resultData.getLong("count");
+            long total = resultData.getLong("total");
+            int stageString = resultData.getInt("stage");
+            Log.i(TAG,String.format("Scanning status updated: %d/%d",count,total));
             if(vm!=null){
-                ((GalleryViewModel) vm).scanningImages.postValue(false);
+                Log.i(TAG,"model updated");
+                vm.setProgress(count,total,stageString);
+            }else{
+                Log.w(TAG,"model NOT updated");
             }
         }
     }
