@@ -5,4 +5,5 @@
     <string name="no_gps">GPS must be enabled to use this feature</string>
     <string name="no_fine_location">Permission to access fine location must be granted to use this feature</string>
     <string name="cannot_save_photo">Error while saving photo</string>
+    <string name="edit_location">Long press to set location</string>
 </resources>

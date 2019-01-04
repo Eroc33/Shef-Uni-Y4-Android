@@ -12,6 +12,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DateFormat;
@@ -24,6 +25,7 @@ import uk.ac.shef.com4510.support.ObserverUtils;
 
 public class DetailsActivity extends AppCompatActivity implements OnMapReadyCallback, DetailViewActions {
     private DetailsViewModel viewModel;
+    private Marker locationMarker;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,10 +63,14 @@ public class DetailsActivity extends AppCompatActivity implements OnMapReadyCall
             if (lat != 0.0 || lng != 0.0) {
                 // Don't draw the marker if the location is unknown
                 LatLng pos = new LatLng(lat, lng);
-                MarkerOptions options = new MarkerOptions().position(pos);
-
-                map.addMarker(options);
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14.0f));
+
+                if (locationMarker == null) {
+                    MarkerOptions options = new MarkerOptions().position(pos);
+                    locationMarker = map.addMarker(options);
+                } else {
+                    locationMarker.setPosition(pos);
+                }
             }
         });
     }
