@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.media.ExifInterface;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -101,7 +103,7 @@ public class Image {
         }
     }
 
-    public Image withTitleAndDescription(String title, String description){
+    public Image withTitleDescriptionLocation(String title, String description, Double latitude, Double longitude){
         return new Image(
                 path,
                 thumbnailPath,
