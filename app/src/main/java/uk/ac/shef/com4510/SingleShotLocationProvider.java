@@ -11,15 +11,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 
 public class SingleShotLocationProvider {
 
     private static final long LOCATION_LOCK_TIMEOUT = 5000;
 
-    public enum LocationReason {NO_FINE_LOCATION, NO_GPS}
+    public enum LocationReason {NO_FINE_LOCATION, NO_GPS, NO_LAST_KNOWN}
 
     public interface LocationCallback {
-        void onLocationAvailable(Location location);
+        void onLocationAvailable(@NonNull Location location);
         void onLocationUnavailable(LocationReason reason);
     }
 
@@ -39,8 +40,8 @@ public class SingleShotLocationProvider {
                 LocationListener locationListener = new LocationListener() {
                     boolean completed = false;
 
-                    private synchronized void locationChanged(Location location){
-                        if(completed){
+                    private synchronized void locationChanged(Location location) {
+                        if (completed) {
                             return;
                         }
                         completed = true;
@@ -62,12 +63,21 @@ public class SingleShotLocationProvider {
                     public void onProviderDisabled(String provider) { }
 
                 };
+
                 Looper myLooper = Looper.myLooper();
                 locationManager.requestSingleUpdate(criteria, locationListener, myLooper);
+
                 final Handler myHandler = new Handler(myLooper);
                 myHandler.postDelayed(() -> {
                     locationManager.removeUpdates(locationListener);
-                    locationListener.onLocationChanged(locationManager.getLastKnownLocation(bestProvider));
+                    Location locationLastKnown = locationManager.getLastKnownLocation(bestProvider);
+
+                    if (locationLastKnown == null) {
+                        // If we have hit the timeout with no known last location...
+                        callback.onLocationUnavailable(LocationReason.NO_LAST_KNOWN);
+                    } else {
+                        locationListener.onLocationChanged(locationLastKnown);
+                    }
                 }, LOCATION_LOCK_TIMEOUT);
             } else {
                 callback.onLocationUnavailable(LocationReason.NO_GPS);

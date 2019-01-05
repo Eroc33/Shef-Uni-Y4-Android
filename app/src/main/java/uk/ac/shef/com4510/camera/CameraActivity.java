@@ -122,7 +122,7 @@ public class CameraActivity extends AppCompatActivity {
                         SingleShotLocationProvider.requestSingleUpdate(getApplicationContext(),
                                 new SingleShotLocationProvider.LocationCallback() {
                                     @Override
-                                    public void onLocationAvailable(Location location) {
+                                    public void onLocationAvailable(@NonNull Location location) {
                                         savePhoto(file, location.getLatitude(), location.getLongitude());
                                     }
 

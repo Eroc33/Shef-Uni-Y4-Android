@@ -119,7 +119,7 @@ public class MapFragment extends Fragment
                 == PackageManager.PERMISSION_GRANTED) {
             SingleShotLocationProvider.requestSingleUpdate(getContext(),
                     new SingleShotLocationProvider.LocationCallback() {
-                        @Override public void onLocationAvailable(Location location) {
+                        @Override public void onLocationAvailable(@NonNull Location location) {
                             double lat = location.getLatitude();
                             double lng = location.getLongitude();
 
@@ -136,13 +136,18 @@ public class MapFragment extends Fragment
                         @Override public void onLocationUnavailable(
                                 SingleShotLocationProvider.LocationReason reason) {
                             switch (reason) {
+                                case NO_FINE_LOCATION: {
+                                    Toast.makeText(getContext(), R.string.no_fine_location, Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+
                                 case NO_GPS: {
                                     Toast.makeText(getContext(), R.string.no_gps, Toast.LENGTH_SHORT).show();
                                     break;
                                 }
 
-                                case NO_FINE_LOCATION: {
-                                    Toast.makeText(getContext(), R.string.no_fine_location, Toast.LENGTH_SHORT).show();
+                                case NO_LAST_KNOWN: {
+                                    Toast.makeText(getContext(), R.string.no_last_known, Toast.LENGTH_SHORT).show();
                                     break;
                                 }
                             }
