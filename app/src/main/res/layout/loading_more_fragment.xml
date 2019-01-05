@@ -24,7 +24,7 @@
         android:backgroundTint="#cfff"
         android:foregroundTint="#cfff"
         android:visibility="@{scanning ? View.VISIBLE : View.GONE}"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -48,7 +48,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text="Scanning your device for more Images"
+            android:text="@string/scanning_message"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/progressBar"
             app:layout_constraintTop_toTopOf="parent" />

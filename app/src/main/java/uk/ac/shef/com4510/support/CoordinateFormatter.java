@@ -13,7 +13,7 @@ public class CoordinateFormatter {
 
     public String format(double latitude, double longitude) {
         if (latitude == 0.0 && longitude == 0.0) {
-            return "Coordinates: Unknown";
+            return "Location not set";
         } else {
             return resources.getString(R.string.coordinate_format_string, latitude, longitude);
         }
