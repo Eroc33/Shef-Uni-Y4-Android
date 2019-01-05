@@ -68,6 +68,20 @@
                     app:layout_constraintTop_toTopOf="@id/map" />
 
                 <TextView
+                    android:id="@+id/basic_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="3"
+                    android:padding="8dp"
+                    android:text="Basic information:"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="#444"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/map" />
+
+                <TextView
                     android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -80,7 +94,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/map" />
+                    app:layout_constraintTop_toBottomOf="@id/basic_info" />
 
                 <TextView
                     android:id="@+id/description"
@@ -95,7 +109,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/title" />
+                    app:layout_constraintTop_toBottomOf="@id/title" />
 
                 <TextView
                     android:id="@+id/date"
@@ -114,6 +128,20 @@
                     app:layout_constraintTop_toBottomOf="@id/description" />
 
                 <TextView
+                    android:id="@+id/photo_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="3"
+                    android:padding="8dp"
+                    android:text="Photographic information:"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="#444"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/date" />
+
+                <TextView
                     android:id="@+id/fstop"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -127,7 +155,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/date" />
+                    app:layout_constraintTop_toBottomOf="@id/photo_info" />
 
                 <TextView
                     android:id="@+id/focalLength"
@@ -135,7 +163,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`Focal Length: ` + image.formatFocalLength()}"
+                    android:text="@{`Focal length: ` + image.formatFocalLength()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -167,7 +195,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`Shutter Speed: ` + image.formatShutterSpeed()}"
+                    android:text="@{`Shutter speed: ` + image.formatShutterSpeed()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"

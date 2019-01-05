@@ -101,7 +101,7 @@ public class Image {
         }
     }
 
-    public Image withTitleDescriptionLocation(String title, String description, Double latitude, Double longitude){
+    public Image withBasicInfo(String title, String description, Double latitude, Double longitude, long timestamp){
         return new Image(
                 path,
                 thumbnailPath,
