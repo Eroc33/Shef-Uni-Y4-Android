@@ -7,6 +7,9 @@ import android.support.annotation.NonNull;
 
 import java.util.Calendar;
 
+/**
+ * SSearch parameters the user can input in @link{SearchFragment}
+ */
 public class SearchViewModel extends AndroidViewModel {
 
     final public MutableLiveData<String> title = new MutableLiveData<>();

@@ -1,9 +1,12 @@
-package uk.ac.shef.com4510;
+package uk.ac.shef.com4510.support;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
+/**
+ * Used to load a @{Bitmap} on a background thread to avoid freezing the ui.
+ */
 public class LoadBitmapTask extends AsyncTask<LoadBitmapTask.Parameters, Void, LoadBitmapTask.Parameters[]> {
 
     private boolean complete;
@@ -25,10 +28,16 @@ public class LoadBitmapTask extends AsyncTask<LoadBitmapTask.Parameters, Void, L
         complete = true;
     }
 
+    /**
+     * @return whether the task has finished running
+     */
     public boolean isComplete() {
         return complete;
     }
 
+    /**
+     * Used to receive a bitmap loaded by a @link{LoadBitmapTask}
+     */
     public interface Callback{
         void accept(Bitmap bitmap);
     }

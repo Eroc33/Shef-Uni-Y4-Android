@@ -7,6 +7,9 @@ import java.util.Calendar;
 
 import uk.ac.shef.com4510.data.CalendarConverters;
 
+/**
+ * Data holder for search data when launching the gallery fragment to display results from another fragment.
+ */
 public class Search implements Parcelable {
     public static final Creator<Search> CREATOR = new Creator<Search>() {
         @Override

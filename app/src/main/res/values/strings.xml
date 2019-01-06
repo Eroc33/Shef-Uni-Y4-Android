@@ -23,4 +23,5 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="date">Date</string>
+    <string name="location_not_set">Location not set</string>
 </resources>

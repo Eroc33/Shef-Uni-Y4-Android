@@ -4,14 +4,20 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.graphics.Bitmap;
 
-import uk.ac.shef.com4510.LoadBitmapTask;
-
+/**
+ * Wraps a @link{LoadBitmapTask} to produce a @link{LiveData}
+ * @see LoadBitmapTask
+ */
 public class BitmapLoader {
     private LoadBitmapTask task;
     private String path;
 
-    public LiveData<Bitmap> bitmap = new MutableLiveData<>();
+    public final LiveData<Bitmap> bitmap = new MutableLiveData<>();
 
+    /**
+     * Begins loading a bitmap for an image from the given task
+     * @param path - The path of an image file to load
+     */
     public synchronized void setSourcePath(String path){
         if (this.path == null && path == null){
             return;
@@ -31,6 +37,9 @@ public class BitmapLoader {
         task.execute(new LoadBitmapTask.Parameters(this::outputBitmap,path));
     }
 
+    /**
+     * Stop any pending tasks
+     */
     public synchronized void cancel(){
         if (task != null) {
             task.cancel(true);

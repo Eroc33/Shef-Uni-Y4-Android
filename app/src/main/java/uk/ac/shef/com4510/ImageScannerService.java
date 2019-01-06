@@ -24,15 +24,34 @@ import java.util.Set;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.data.ImageDao;
 
+/**
+ * Handles loading images into the rooms database on a background thread.
+ */
 public class ImageScannerService extends IntentService {
 
-    public static final String ACTION_SCAN_ALL = "uk.ac.shef.com4501.ACTION_SCAN_ALL";
-    public static final String ACTION_LOAD_ONE = "uk.ac.shef.com4501.ACTION_LOAD_ONE";
-    public static final String LOAD_URI = "uk.ac.shef.com4501.LOAD_URI";
+    /**
+     * Intent action to rescan the mediastore
+     */
+    private static final String ACTION_SCAN_ALL = "uk.ac.shef.com4501.ACTION_SCAN_ALL";
+    /**
+     * Intent action to load a single image into the rooms database
+     */
+    private static final String ACTION_LOAD_ONE = "uk.ac.shef.com4501.ACTION_LOAD_ONE";
+    /**
+     * Key for uri to be loaded with @link{ACTION_LOAD_ONE}
+     */
+    private static final String ARG_LOAD_URI = "uk.ac.shef.com4501.ARG_LOAD_URI";
 
+    /**
+     * Key for status update receiver to use with @link{ACTION_SCAN_ALL}
+     */
+    public static final String ARG_LOAD_STATUS_RECEIVER = "uk.ac.shef.com4501.ARG_LOAD_STATUS_RECEIVER";
+
+    //uris to load images from, i.e. INTERNAL_CONTENT_URI and EXTERNAL_CONTENT_URI
     private static final Set<Uri> STORAGE_URIS;
     private static final String TAG = ImageScannerService.class.getCanonicalName();
-    public static final int BATCH_SIZE = 100;
+    //number of images per insert, lower is more responsive, but may cause more memory thrashing
+    private static final int BATCH_SIZE = 100;
 
     static {
         STORAGE_URIS = new HashSet<>();
@@ -46,18 +65,28 @@ public class ImageScannerService extends IntentService {
         super("Image Scanner Service");
     }
 
+    /**
+     * Typesafe way to issue the @link{ACTION_SCAN_ALL} action
+     * @param context Context in which to start the service
+     * @param receiver Receives updates on load progress
+     */
     public static void scan_all(Context context, ResultReceiver receiver) {
         Intent serviceIntent = new Intent(context, ImageScannerService.class);
         serviceIntent.setAction(ACTION_SCAN_ALL);
-        serviceIntent.putExtra("scanStatusUpdate",receiver);
+        serviceIntent.putExtra(ARG_LOAD_STATUS_RECEIVER,receiver);
         context.startService(serviceIntent);
     }
 
+    /**
+     * Typesafe way to issue the @link{ACTION_LOAD_ONE} action
+     * @param context Context in which to start the service
+     * @param uri Uri of the image to load
+     */
     public static void load_one(Context context,Uri uri) {
         Log.i(TAG, String.format("Loading single image from uri: %s",uri.toString()));
         Intent serviceIntent = new Intent(context, ImageScannerService.class);
         serviceIntent.setAction(ACTION_LOAD_ONE);
-        serviceIntent.putExtra(LOAD_URI,uri);
+        serviceIntent.putExtra(ARG_LOAD_URI,uri);
         context.startService(serviceIntent);
     }
 
@@ -84,8 +113,8 @@ public class ImageScannerService extends IntentService {
         }
         if(action.equals(ACTION_SCAN_ALL)){
             ResultReceiver scanStatusUpdate = null;
-            if(intent.hasExtra("scanStatusUpdate")){
-                scanStatusUpdate = intent.getParcelableExtra("scanStatusUpdate");
+            if(intent.hasExtra(ARG_LOAD_STATUS_RECEIVER)){
+                scanStatusUpdate = intent.getParcelableExtra(ARG_LOAD_STATUS_RECEIVER);
             }else{
                 Log.w(TAG,"No onScanComplete callback");
             }
@@ -111,7 +140,7 @@ public class ImageScannerService extends IntentService {
 
                     while (!cursor.isAfterLast()) {
                         if (!imageDatabase.containsSync(cursor.getString(pathIndex))) {
-                            batch.add(Image.fromCursor(cursor,thumbnailFromCursor(cursor,isExternal)));
+                            batch.add(new Image(cursor,thumbnailFromCursor(cursor,isExternal)));
                         }
                         count += 1;
                         if (batch.size() == BATCH_SIZE){
@@ -125,15 +154,24 @@ public class ImageScannerService extends IntentService {
             }
             Log.d(TAG,"Completed request ACTION_SCAN_ALL");
         }else if(action.equals(ACTION_LOAD_ONE)){
-            Uri uri = intent.getParcelableExtra(LOAD_URI);
+            Uri uri = intent.getParcelableExtra(ARG_LOAD_URI);
             if(uri == null){
-                throw new IllegalArgumentException("LOAD_URI must not be null");
+                throw new IllegalArgumentException("ARG_LOAD_URI must not be null");
             }
             changed(uri);
         }
     }
 
-    private void saveImageBatch(ResultReceiver scanStatusUpdate, long total, long count, ImageDao imageDatabase, List<Image> batch, boolean isExternal) {
+    /**
+     * Saves a batch of new images to the db and optionally sends a status update.
+     * @param scanStatusUpdate Receives the status update
+     * @param total The total number of images to load
+     * @param count The number of images we have loaded so far (including these)
+     * @param imageDatabase The database to which the batch will be saved
+     * @param batch The images to save
+     * @param isExternal Whether these images are internal or external
+     */
+    private void saveImageBatch(@Nullable ResultReceiver scanStatusUpdate, long total, long count, ImageDao imageDatabase, List<Image> batch, boolean isExternal) {
         imageDatabase.insertSync(batch);
         batch.clear();
         if( scanStatusUpdate != null) {
@@ -147,6 +185,12 @@ public class ImageScannerService extends IntentService {
         }
     }
 
+    /**
+     * Find a thumbnail for a row in the mediastore
+     * @param cursor On a row in the @link{Mediastore.Images} table
+     * @param isExternalImage Whether the image is on internal or external storage
+     * @return The path to a thumbnail, if one exists.
+     */
     private String thumbnailFromCursor(Cursor cursor, boolean isExternalImage) {
         String imageId = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID));
         Uri uri = MediaStore.Images.Thumbnails.INTERNAL_CONTENT_URI;
@@ -174,6 +218,9 @@ public class ImageScannerService extends IntentService {
         return ((Application) getApplication()).getImageDb().imageDao();
     }
 
+    /**
+     * Content Observer callback when a mediastore image is changed on storage
+     */
     private void changed(Uri uri) {
         Log.i(TAG, String.format("Uri %s changed", uri.toString()));
         try (Cursor cursor = contentResolver.query(uri, Image.FIELDS, null, null, null, null)) {
@@ -184,7 +231,7 @@ public class ImageScannerService extends IntentService {
             if (!cursor.isAfterLast()) {
                 boolean isExternal = false;
                 if (!imageDatabase.containsSync(cursor.getString(pathIndex))) {
-                    imageDatabase.insertSync(Image.fromCursor(cursor,thumbnailFromCursor(cursor,isExternal)));
+                    imageDatabase.insertSync(new Image(cursor,thumbnailFromCursor(cursor,isExternal)));
                 }
             }
         }

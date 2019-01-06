@@ -2,6 +2,9 @@ package uk.ac.shef.com4510.data;
 
 import java.util.Calendar;
 
+/**
+ * Conversions between unix timestamps and java Calendar objects
+ */
 public final class CalendarConverters {
 
     //private as instantiating this makes no sense

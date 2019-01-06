@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -27,10 +26,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.util.ArrayList;
 
@@ -40,6 +37,10 @@ import uk.ac.shef.com4510.SingleShotLocationProvider;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.details.DetailsActivity;
 
+/**
+ * Displays image locations on map view, clustering if necessary, and navigates to a details view,
+ * or list view when an image or cluster is selected.
+ */
 public class MapFragment extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback,
             ClusterManager.OnClusterItemClickListener<MapFragment.Cluster>, ClusterManager.OnClusterClickListener<MapFragment.Cluster> {
@@ -49,28 +50,48 @@ public class MapFragment extends Fragment
     private Marker locationMarker;
     private ClusterManager<Cluster> clusterManager;
 
+    /**
+     * When an individual unclustered item from a cluster is clicked
+     * @return Whether we handled it or not
+     */
     @Override
     public boolean onClusterItemClick(Cluster cluster) {
+        //we need a context for activity start
         Context context = requireActivity().getApplicationContext();
-        Intent startActivityIntent = new Intent(context, DetailsActivity.class);
+
+        //db id of what was clicked
         String path = cluster.getImage().getPath();
 
+        //launch details activity
+        Intent startActivityIntent = new Intent(context, DetailsActivity.class);
         startActivityIntent.putExtra("imagePath", path);
         context.startActivity(startActivityIntent);
 
+        //we always handle it
         return true;
     }
 
+    /**
+     * When a cluster is clicked
+     * @return Whether we handled it or not
+     */
     @Override
     public boolean onClusterClick(com.google.maps.android.clustering.Cluster<Cluster> cluster) {
         Bundle bundle = new Bundle();
+
+        //collect everything that was clicked
+        //Note: Ideally we would use streams here, but the minimum  specified android version does
+        // not seem to support streams.
         ArrayList<Cluster> clusters = new ArrayList<>(cluster.getItems());
         ArrayList<String> paths =  new ArrayList<String>(cluster.getSize());
         for(Cluster c : clusters){
             paths.add(c.image.getPath());
         }
+        //launch gallery view with that set of images so the user can choose the one they want.
         bundle.putStringArrayList("showExact", paths);
         Navigation.findNavController(getView()).navigate(R.id.action_mapFragment_to_galleryFragment, bundle);
+
+        //we always handle it
         return true;
     }
 
@@ -92,12 +113,7 @@ public class MapFragment extends Fragment
         mapFragment.getMapAsync(this);
 
         FloatingActionButton fabLocation = view.findViewById(R.id.fab_location);
-        fabLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setLocationMarker();
-            }
-        });
+        fabLocation.setOnClickListener(v -> setLocationMarker());
 
         return view;
     }
@@ -117,9 +133,10 @@ public class MapFragment extends Fragment
     }
 
     private void setLocationMarker() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        Context context = requireContext();
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            SingleShotLocationProvider.requestSingleUpdate(getContext(),
+            SingleShotLocationProvider.requestSingleUpdate(context,
                     new SingleShotLocationProvider.LocationCallback() {
                         @Override public void onLocationAvailable(@NonNull Location location) {
                             double lat = location.getLatitude();
@@ -197,6 +214,9 @@ public class MapFragment extends Fragment
         }
     }
 
+    /**
+     * Cluster implementation which just forwards to the image used to construct it.
+     */
     public static class Cluster implements ClusterItem{
 
         private final Image image;

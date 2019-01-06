@@ -13,6 +13,9 @@ import androidx.navigation.Navigation;
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.databinding.SearchFragmentBinding;
 
+/**
+ * Allows the user to input search parameters, and then starts a fragment to display them
+ */
 public class SearchFragment extends Fragment implements SearchActions {
     private static final String TAG = "SearchFragment";
     private SearchViewModel viewModel;

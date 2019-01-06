@@ -7,13 +7,13 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
-import java.lang.ref.WeakReference;
-import java.util.WeakHashMap;
-
-import uk.ac.shef.com4510.LoadBitmapTask;
-
+/**
+ * Contains @link{BindingAdapter} implementation for attaching @{Bitmap}s to @link{ImageView}s
+ * @see {BindingAdapter}
+ * @see {Bitmap}
+ * @see {ImageView}
+ */
 public class AsyncImageBindingAdapter {
-    private static WeakHashMap<ImageView, WeakReference<LoadBitmapTask>> tasks = new WeakHashMap<>();
 
     //recycle old bitmaps
     private static synchronized void recycleViewBitmap(ImageView view){

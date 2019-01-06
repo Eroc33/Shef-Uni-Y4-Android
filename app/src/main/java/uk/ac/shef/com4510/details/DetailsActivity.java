@@ -23,6 +23,9 @@ import uk.ac.shef.com4510.databinding.ActivityDetailsBinding;
 import uk.ac.shef.com4510.support.CoordinateFormatter;
 import uk.ac.shef.com4510.support.ObserverUtils;
 
+/**
+ * Activity showing fullscreen image, location on map, and exif data
+ */
 public class DetailsActivity extends AppCompatActivity implements OnMapReadyCallback, DetailViewActions {
     private DetailsViewModel viewModel;
     private Marker locationMarker;
@@ -72,6 +75,9 @@ public class DetailsActivity extends AppCompatActivity implements OnMapReadyCall
         });
     }
 
+    /**
+     * Open the edit details view
+     */
     @Override
     public void edit() {
         ObserverUtils.observeOneshot(viewModel.getImage(),(image)->{

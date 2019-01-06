@@ -37,6 +37,10 @@ import java.io.OutputStream;
 
 import static android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
+/**
+ * Extends the functionality of @link{Mediastore#insertImage} to also add the latitude and longitude
+ * Used to make images with the app (and their location) available to mediastore consumers.
+ */
 public class MediaStoreHelper {
     private static final String TAG = "MediaStoreHelper";
 

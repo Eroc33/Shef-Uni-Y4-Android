@@ -10,6 +10,9 @@ import uk.ac.shef.com4510.data.CalendarConverters;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.support.ObserverUtils;
 
+/**
+ * Provides mutable livedata for all the metadata properties the user can edit on an image
+ */
 public class EditDetailsViewModel extends DetailsViewModel {
     final public MutableLiveData<String> title = new MutableLiveData<>();
     final public MutableLiveData<String> description = new MutableLiveData<>();

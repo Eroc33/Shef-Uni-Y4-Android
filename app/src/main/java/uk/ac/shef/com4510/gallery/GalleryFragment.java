@@ -55,16 +55,21 @@ public class GalleryFragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //setup viewmodel, databinding, etc.
+
         binding = GalleryFragmentBinding.inflate(inflater, container, false);
         binding.setLifecycleOwner(this);
         binding.setAdapterProvider(this);
         binding.setActions(this);
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
-        recyclerViewAdapter = new GalleryRecyclerViewAdapter(getContext(), viewModel, this);
+        recyclerViewAdapter = new GalleryRecyclerViewAdapter(viewModel, this);
+
+        //execute search
         Search search = getArguments().getParcelable("search");
         if (search != null) {
             viewModel.applySearch(search);
         }else{
+            //or display exact list, such as from a map cluster being clicked.
             List<String> exactPaths = getArguments().getStringArrayList("showExact");
             if(exactPaths != null){
                 viewModel.withExactImages(exactPaths);
@@ -74,6 +79,7 @@ public class GalleryFragment
         binding.setViewModel(viewModel);
         binding.executePendingBindings();
 
+        //get permissions for image scanning
         if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -85,6 +91,7 @@ public class GalleryFragment
         return binding.getRoot();
     }
 
+    //Callback for when required permissions are handled
     private void continueSetup() {
         ImageScannerService.scan_all(requireActivity().getApplicationContext(),new ScanResultReciever(viewModel));
     }
@@ -105,6 +112,9 @@ public class GalleryFragment
         }
     }
 
+    /**
+     * Used to track progress of scanning the mediastore for images.
+     */
     private static class ScanResultReciever extends ResultReceiver {
         private WeakReference<GalleryViewModel> viewModelWeakReference;
         ScanResultReciever(GalleryViewModel viewModel) {

@@ -12,7 +12,11 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
+/**
+ * Holds path and cached metadata for an image
+ */
 @Entity
 public class Image {
     public static final String[] FIELDS = new String[]{
@@ -57,8 +61,13 @@ public class Image {
         this.hasExif = hasExif;
     }
 
-    public static Image fromCursor(Cursor cursor, String thumbnailPath) {
-        return new Image(
+    /**
+     * Loads an image from a mediastore cursor and a thumbnail path
+     * @param cursor A media store cursor. Should use @link{FIELDS} as the column
+     * @param thumbnailPath
+     */
+    public Image(Cursor cursor, String thumbnailPath) {
+        this(
                 cursor.getString(0),
                 thumbnailPath,
                 cursor.getString(2),
@@ -74,6 +83,10 @@ public class Image {
         );
     }
 
+    /**
+     * Loads exif for this @link{Image} and returns a new instance of @link{Image} with the exif added.
+     * @return An image with available exif loaded
+     */
     public Image withExif() {
         try {
             ExifInterface exif = new ExifInterface(path);
@@ -192,40 +205,52 @@ public class Image {
         return hasExif;
     }
 
+    /**
+     * Fstop formatted as a string in the conventional format
+     */
     public String formatFstop(){
         if(fstop != 0){
-            return String.format("f/%.2f",fstop);
+            return String.format(Locale.getDefault(),"f/%.2f",fstop);
         }else{
             return null;
         }
     }
 
+    /**
+     * Iso formatted as a string in the conventional format
+     */
     public String formatISO(){
         if(iso != 0){
-            return String.format("ISO%d",iso);
+            return String.format(Locale.getDefault(),"ISO%d",iso);
         }else{
             return null;
         }
     }
 
+    /**
+     * Focal Length formatted as a string in the conventional format
+     */
     public String formatFocalLength(){
         if(focalLength != 0){
-            return String.format("%.2fmm",focalLength);
+            return String.format(Locale.getDefault(),"%.2fmm",focalLength);
         }else{
             return null;
         }
     }
 
+    /**
+     * Shutter Speed formatted as a string in the conventional format
+     */
     public String formatShutterSpeed(){
         if(shutterSpeed == 0.0){
             return null;
         }
         if(shutterSpeed >= 1){
-            return String.format("%ds",(long)shutterSpeed);
+            return String.format(Locale.getDefault(),"%ds",(long)shutterSpeed);
         }else{
             long numer = 1;
             long denom = (long)(1/shutterSpeed);
-            return String.format("%d/%ds",numer,denom);
+            return String.format(Locale.getDefault(),"%d/%ds",numer,denom);
         }
     }
 }

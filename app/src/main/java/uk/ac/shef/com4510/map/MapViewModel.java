@@ -12,6 +12,9 @@ import java.util.List;
 import uk.ac.shef.com4510.ImageRepository;
 import uk.ac.shef.com4510.data.Image;
 
+/**
+ * Provides a @link{LiveData} @link{List} of all @link{Image}s that have a non-nul location.
+ */
 public class MapViewModel extends AndroidViewModel {
     private final ImageRepository imageRepository;
 

@@ -18,6 +18,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.databinding.EditDetailsFragmentBinding;
 
+/**
+ * Activity allowing the user to edit various details of an image
+ */
 public class EditDetailsActivity extends AppCompatActivity implements EditDetailsActions,
         OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 

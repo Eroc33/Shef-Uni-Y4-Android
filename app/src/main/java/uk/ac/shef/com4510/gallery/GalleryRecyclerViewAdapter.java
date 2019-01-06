@@ -1,7 +1,6 @@
 package uk.ac.shef.com4510.gallery;
 
 import android.arch.lifecycle.LifecycleOwner;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.AsyncListDiffer;
@@ -19,6 +18,10 @@ import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.databinding.GalleryItemBinding;
 import uk.ac.shef.com4510.support.BitmapLoader;
 
+/**
+ * Adapts a @link{GalleryViewModel} into a @link{RecyclerView} of the titles and thumbnails of the
+ * images from the viewmodel.
+ */
 public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "GalleryRecyclerViewAdapter";
@@ -43,13 +46,14 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
         }
     };
 
-    public GalleryRecyclerViewAdapter(Context context, GalleryViewModel viewModel, LifecycleOwner lifecycleOwner) {
+    public GalleryRecyclerViewAdapter(GalleryViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.viewModel = viewModel;
         this.lifecycleOwner = lifecycleOwner;
         this.viewModel.getImages().observe(lifecycleOwner, this::setImages);
     }
 
     private void setImages(final List<Image> newImages) {
+        //Here we diff the images for better performance over just replacing the list.
         differ.submitList(newImages);
     }
 

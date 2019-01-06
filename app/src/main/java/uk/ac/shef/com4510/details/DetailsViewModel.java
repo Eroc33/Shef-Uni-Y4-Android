@@ -11,10 +11,14 @@ import uk.ac.shef.com4510.ImageRepository;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.support.BitmapLoader;
 
+/**
+ * Provides an image and bitmap from the database id (the path).
+ */
 public class DetailsViewModel extends AndroidViewModel {
     protected final ImageRepository imageRepository;
     private MediatorLiveData<Image> image = new MediatorLiveData<>();
     private LiveData<Image> imageSource;
+    //Used to provide the bitmap
     private BitmapLoader bitmapLoader = new BitmapLoader();
 
     public DetailsViewModel(@NonNull Application application) {
@@ -35,10 +39,13 @@ public class DetailsViewModel extends AndroidViewModel {
         }
         imageSource = imageRepository.getImage(path);
         image.addSource(imageSource, newImage -> {
-            if (newImage == null) {
+            //if image is null, or unchanged don't reload stuff
+            if (newImage == null || newImage.equals(image.getValue())) {
                 return;
             }
+            //start loading the bimap
             bitmapLoader.setSourcePath(newImage.getPath());
+            //ensure exif is loaded
             if(!newImage.hasExif()){
                 newImage = newImage.withExif();
                 imageRepository.update(newImage);

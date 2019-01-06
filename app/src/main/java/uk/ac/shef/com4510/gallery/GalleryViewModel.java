@@ -13,6 +13,9 @@ import uk.ac.shef.com4510.ImageRepository;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.search.Search;
 
+/**
+ * Provide a @link{LiveData} of all images in the db, and progress of any ongoing loading of images.
+ */
 public class GalleryViewModel extends AndroidViewModel {
     private static String TAG = "GalleryViewModel";
     private final ImageRepository imageRepository;
@@ -54,6 +57,9 @@ public class GalleryViewModel extends AndroidViewModel {
     }
 
     private void updateScanningStatus(Long count, Long total){
+        if(count == null || total == null){
+            return;
+        }
         ((MediatorLiveData<Boolean>) scanningImages).postValue(!count.equals(total));
 
     }
