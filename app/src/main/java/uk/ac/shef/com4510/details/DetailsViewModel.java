@@ -16,7 +16,7 @@ import uk.ac.shef.com4510.support.ProxyLiveData;
  * Provides an image and bitmap from the database id (the path).
  */
 public class DetailsViewModel extends AndroidViewModel {
-    private final ImageRepository imageRepository;
+    protected final ImageRepository imageRepository;
     private final MediatorLiveData<Image> image = new MediatorLiveData<>();
     private final ProxyLiveData<Image> imageSource = new ProxyLiveData<>();
     //Used to provide the bitmap
