@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
-            name="image"
-            type="uk.ac.shef.com4510.data.Image" />
+            name="viewmodel"
+            type="uk.ac.shef.com4510.details.DetailsViewModel"/>
 
         <variable
             name="coordinateFormatter"
@@ -40,7 +38,7 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/selected_image"
                     android:scaleType="fitCenter"
-                    app:imageAsync="@{image.path}"
+                    app:imageAsync="@{viewmodel.bitmap}"
                     app:layout_constraintTop_toTopOf="parent"/>
 
                 <fragment
@@ -56,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{coordinateFormatter.format(image.latitude,image.longitude)}"
+                    android:text="@{coordinateFormatter.format(viewmodel.image.latitude,viewmodel.image.longitude)}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="14sp"
@@ -87,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`Title: ` + image.title}"
+                    android:text="@{`Title: ` + viewmodel.image.title}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -102,7 +100,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`Description: ` + image.description}"
+                    android:text="@{`Description: ` + viewmodel.image.description}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -117,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`Date: ` + image.getDateString(dateFormatter)}"
+                    android:text="@{`Date: ` + viewmodel.image.getDateString(dateFormatter)}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -147,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`Fstop: ` + image.formatFstop()}"
+                    android:text="@{`Fstop: ` + viewmodel.image.formatFstop()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -163,7 +161,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`Focal length: ` + image.formatFocalLength()}"
+                    android:text="@{`Focal length: ` + viewmodel.image.formatFocalLength()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -179,7 +177,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`Iso: ` + image.formatISO()}"
+                    android:text="@{`Iso: ` + viewmodel.image.formatISO()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"
@@ -195,7 +193,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:text="@{`Shutter speed: ` + image.formatShutterSpeed()}"
+                    android:text="@{`Shutter speed: ` + viewmodel.image.formatShutterSpeed()}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="#444"
                     android:textSize="18sp"

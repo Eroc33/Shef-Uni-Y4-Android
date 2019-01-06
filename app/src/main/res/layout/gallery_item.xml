@@ -7,6 +7,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="bitmap"
+            type="android.graphics.Bitmap"/>
+
+        <variable
             name="image"
             type="uk.ac.shef.com4510.data.Image" />
 
@@ -34,6 +38,7 @@
                 android:layout_height="180dp"
                 android:layout_alignParentTop="true"
                 android:scaleType="centerCrop"
+                app:imageAsync="@{bitmap}"
                 />
 
             <TextView
