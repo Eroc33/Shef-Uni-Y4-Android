@@ -37,13 +37,17 @@ public class ProxyLiveData<T> extends MutableLiveData<T> {
     @CallSuper
     @Override
     protected void onActive() {
-        source.observeForever(this::changed);
+        if(source != null) {
+            source.observeForever(this::changed);
+        }
     }
 
     @CallSuper
     @Override
     protected void onInactive() {
-        source.removeObserver(this::changed);
+        if(source != null) {
+            source.removeObserver(this::changed);
+        }
     }
 
     private void changed(@Nullable T val){
