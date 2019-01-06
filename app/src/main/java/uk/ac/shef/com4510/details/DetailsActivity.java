@@ -40,10 +40,7 @@ public class DetailsActivity extends AppCompatActivity implements OnMapReadyCall
         String path = getIntent().getStringExtra("imagePath");
         viewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
         viewModel.setPath(path);
-        viewModel.getImage().observe(this, image -> {
-            binding.setImage(image);
-            binding.executePendingBindings();
-        });
+        binding.setViewmodel(viewModel);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);

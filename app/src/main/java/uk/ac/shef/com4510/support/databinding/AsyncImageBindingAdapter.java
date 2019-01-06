@@ -1,6 +1,10 @@
 package uk.ac.shef.com4510.support.databinding;
 
 import android.databinding.BindingAdapter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
@@ -11,24 +15,38 @@ import uk.ac.shef.com4510.LoadBitmapTask;
 public class AsyncImageBindingAdapter {
     private static WeakHashMap<ImageView, WeakReference<LoadBitmapTask>> tasks = new WeakHashMap<>();
 
-    @BindingAdapter("app:imageAsync")
-    public static void setImageAsync(ImageView view, String path) {
-        //cancel any old tasks for this image
-        WeakReference<LoadBitmapTask> taskRef = tasks.get(view);
-        if (taskRef != null) {
-            LoadBitmapTask task = taskRef.get();
-            if (task != null && !task.isComplete()) {
-                task.cancel(true);
+    //recycle old bitmaps
+    private static synchronized void recycleViewBitmap(ImageView view){
+        Drawable viewDrawable = view.getDrawable();
+        if(viewDrawable instanceof  BitmapDrawable) {
+            Bitmap old_bm = ((BitmapDrawable)viewDrawable).getBitmap();
+            view.setImageBitmap(null);
+            if (old_bm != null && !old_bm.isRecycled()) {
+                old_bm.recycle();
             }
         }
-        //clear old image
-        view.setImageDrawable(null);
-        //start new task
-        LoadBitmapTask task = new LoadBitmapTask();
-        tasks.put(view, new WeakReference<>(task));
-        task.execute(new LoadBitmapTask.Parameters(
-                view::setImageBitmap,
-                path
-        ));
+    }
+
+    @BindingAdapter("app:imageAsync")
+    public static void setImageAsync(ImageView view, Bitmap bm) {
+        //recycle old bitmaps
+        recycleViewBitmap(view);
+
+        //set new image
+        view.setImageBitmap(bm);
+
+        //ensure bitmaps are recycled on view detach
+        view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                //recycle old bitmaps
+                recycleViewBitmap(view);
+            }
+        });
     }
 }
