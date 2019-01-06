@@ -4,13 +4,12 @@ import android.databinding.BindingAdapter;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import uk.ac.shef.com4510.SetImageViewSourceTask;
 
 public class AsyncImageBindingAdapter {
-    private static Map<ImageView, WeakReference<SetImageViewSourceTask>> tasks = new WeakHashMap<>();
+    private static WeakHashMap<ImageView, WeakReference<SetImageViewSourceTask>> tasks = new WeakHashMap<>();
 
     @BindingAdapter("app:imageAsync")
     public static void setImageAsync(ImageView view, String path) {
@@ -28,7 +27,7 @@ public class AsyncImageBindingAdapter {
         SetImageViewSourceTask task = new SetImageViewSourceTask();
         tasks.put(view, new WeakReference<>(task));
         task.execute(new SetImageViewSourceTask.Parameters(
-                view,
+                view::setImageBitmap,
                 path
         ));
     }
