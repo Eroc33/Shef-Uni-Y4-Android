@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:maxLines="3"
             android:padding="8dp"
-            android:text="Basic information:"
+            android:text="@string/basic_info"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textColor="#444"
             android:textSize="18sp"
@@ -57,7 +57,7 @@
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Title"
+                android:hint="@string/title"
                 android:inputType="text"
                 android:text="@={viewmodel.title}"/>
 
@@ -72,7 +72,7 @@
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Description"
+                android:hint="@string/description"
                 android:inputType="text"
                 android:text="@={viewmodel.description}"/>
 
@@ -87,7 +87,7 @@
             <uk.ac.shef.com4510.widgets.TextInputDatePicker
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Date"
+                android:hint="@string/date"
                 app:date="@={viewmodel.date}" />
 
         </android.support.design.widget.TextInputLayout>

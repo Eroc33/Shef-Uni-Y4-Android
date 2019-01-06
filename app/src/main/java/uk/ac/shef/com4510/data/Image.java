@@ -194,9 +194,9 @@ public class Image {
 
     public String formatFstop(){
         if(fstop != 0){
-            return String.format("f/%f",fstop);
+            return String.format("f/%.2f",fstop);
         }else{
-            return "";
+            return null;
         }
     }
 
@@ -204,21 +204,21 @@ public class Image {
         if(iso != 0){
             return String.format("ISO%d",iso);
         }else{
-            return "";
+            return null;
         }
     }
 
     public String formatFocalLength(){
         if(focalLength != 0){
-            return String.format("%fmm",focalLength);
+            return String.format("%.2fmm",focalLength);
         }else{
-            return "";
+            return null;
         }
     }
 
     public String formatShutterSpeed(){
         if(shutterSpeed == 0.0){
-            return "";
+            return null;
         }
         if(shutterSpeed >= 1){
             return String.format("%ds",(long)shutterSpeed);

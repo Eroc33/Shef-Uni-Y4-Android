@@ -15,4 +15,12 @@
     <string name="photo_info">Photographic information:</string>
     <string name="grant_permissions">Please grant all the requested permissions to enable the app to work correctly.</string>
     <string name="no_camera">Your device appears to have no camera, so this feature is unavailable.</string>
+    <string name="unknown_value">Unknown</string>
+    <string name="shutter_speed">Shutter Speed: %s</string>
+    <string name="iso">Iso: %s</string>
+    <string name="focal_length">Focal Length: %s</string>
+    <string name="fstop">Fstop: %s</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="date">Date</string>
 </resources>
