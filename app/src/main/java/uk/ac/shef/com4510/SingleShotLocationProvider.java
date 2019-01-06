@@ -15,7 +15,7 @@ import android.support.annotation.NonNull;
 
 public class SingleShotLocationProvider {
 
-    private static final long LOCATION_LOCK_TIMEOUT = 5000;
+    private static final long LOCATION_TIMEOUT = 10000;
 
     public enum LocationReason {NO_FINE_LOCATION, NO_GPS, NO_LAST_KNOWN}
 
@@ -25,32 +25,22 @@ public class SingleShotLocationProvider {
     }
 
     public static void requestSingleUpdate(Context context, LocationCallback callback) {
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         int fineLocation = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (fineLocation == PackageManager.PERMISSION_GRANTED) {
-            boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
-            if (isGPSEnabled) {
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 Criteria criteria = new Criteria();
-                criteria.setAccuracy(Criteria.ACCURACY_FINE);
-
-                String bestProvider = locationManager.getBestProvider(criteria,false);
+                Looper myLooper = Looper.myLooper();
+                Handler myHandler = new Handler(myLooper);
 
                 LocationListener locationListener = new LocationListener() {
-                    boolean completed = false;
-
-                    private synchronized void locationChanged(Location location) {
-                        if (completed) {
-                            return;
-                        }
-                        completed = true;
-                        callback.onLocationAvailable(location);
-                    }
-
                     @Override
                     public void onLocationChanged(Location location) {
-                        locationChanged(location);
+                        callback.onLocationAvailable(location);
+                        locationManager.removeUpdates(this);
+                        myHandler.removeCallbacksAndMessages(null);
                     }
 
                     @Override
@@ -61,24 +51,24 @@ public class SingleShotLocationProvider {
 
                     @Override
                     public void onProviderDisabled(String provider) { }
-
                 };
 
-                Looper myLooper = Looper.myLooper();
-                locationManager.requestSingleUpdate(criteria, locationListener, myLooper);
-
-                final Handler myHandler = new Handler(myLooper);
-                myHandler.postDelayed(() -> {
+                Runnable timeoutRunnable = () -> {
                     locationManager.removeUpdates(locationListener);
+
+                    String bestProvider = locationManager.getBestProvider(criteria,false);
                     Location locationLastKnown = locationManager.getLastKnownLocation(bestProvider);
 
                     if (locationLastKnown == null) {
-                        // If we have hit the timeout with no known last location...
                         callback.onLocationUnavailable(LocationReason.NO_LAST_KNOWN);
                     } else {
-                        locationListener.onLocationChanged(locationLastKnown);
+                        callback.onLocationAvailable(locationLastKnown);
                     }
-                }, LOCATION_LOCK_TIMEOUT);
+                };
+
+                criteria.setAccuracy(Criteria.ACCURACY_FINE);
+                locationManager.requestSingleUpdate(criteria, locationListener, myLooper);
+                myHandler.postDelayed(timeoutRunnable, LOCATION_TIMEOUT);
             } else {
                 callback.onLocationUnavailable(LocationReason.NO_GPS);
             }
