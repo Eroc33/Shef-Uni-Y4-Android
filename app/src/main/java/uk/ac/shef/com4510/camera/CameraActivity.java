@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import uk.ac.shef.com4510.MainActivity;
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.SingleShotLocationProvider;
 import uk.ac.shef.com4510.support.MediaStoreHelper;
@@ -42,14 +43,14 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void tryOpenCamera() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION},
-                    PermissionRequestCode.CAMERA);
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) ||
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) ||
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED)) {
+            requestPermissions(new String [] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION},
+                    PermissionRequestCode.CAMERA_STORAGE_LOCATION);
         } else {
             openCamera();
         }
@@ -59,12 +60,12 @@ public class CameraActivity extends AppCompatActivity {
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         if (intent.resolveActivity(getPackageManager()) != null) {
             File photoFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), newFilename());
-            Uri photoURI = FileProvider.getUriForFile(this,
-                    "uk.ac.shef.com4510",
-                    photoFile);
+            Uri photoURI = FileProvider.getUriForFile(this, "uk.ac.shef.com4510", photoFile);
+
             currentCaptureFile = photoFile;
             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         }
+
         startActivityForResult(intent, ActivityResultCode.CAMERA);
     }
 
@@ -74,14 +75,26 @@ public class CameraActivity extends AppCompatActivity {
 
     }
 
+    public boolean hasAllPermissionsGranted(@NonNull int[] grantResults) {
+        for (int grantResult : grantResults) {
+            if (grantResult == PackageManager.PERMISSION_DENIED) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
-            case PermissionRequestCode.CAMERA: {
-                if (grantResults.length > 0 && grantResults[0]
-                        == PackageManager.PERMISSION_GRANTED) {
+            case PermissionRequestCode.CAMERA_STORAGE_LOCATION: {
+                if (hasAllPermissionsGranted(grantResults)) {
                     openCamera();
+                } else {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), R.string.grant_permissions, Toast.LENGTH_SHORT).show();
                 }
 
                 break;
@@ -112,7 +125,7 @@ public class CameraActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     Log.i(TAG, String.format("Will load_one %s", currentCaptureFile.toString()));
                     if (currentCaptureFile == null) {
-                        throw new RuntimeException("currentCaptureFile is null when camera completes. this shouldn't  be possible");
+                        throw new RuntimeException("currentCaptureFile is null when camera completes. this shouldn't be possible");
                     }
                     File file = currentCaptureFile;
                     currentCaptureFile = null;
@@ -131,7 +144,7 @@ public class CameraActivity extends AppCompatActivity {
                                         savePhoto(file);
                                     }
                                 });
-                    }else{
+                    } else {
                         savePhoto(file);
                     }
                 } else {
@@ -142,7 +155,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     class PermissionRequestCode {
-        static final int CAMERA = 102;
+        static final int CAMERA_STORAGE_LOCATION = 102;
     }
 
     class ActivityResultCode {

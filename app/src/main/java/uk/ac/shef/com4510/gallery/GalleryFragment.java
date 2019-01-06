@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -91,7 +92,12 @@ public class GalleryFragment
             int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PermissionRequestCode.READ_EXTERNAL_STORAGE: {
-                continueSetup();
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    continueSetup();
+                } else {
+                    Toast.makeText(getContext(), R.string.grant_permissions, Toast.LENGTH_SHORT).show();
+                }
+
                 break;
             }
         }

@@ -4,7 +4,7 @@
     <string name="coordinate_format_string">Latitude: %f, Longitude: %f</string>
     <string name="no_last_known">Couldn\'t acquire your location right now. Please try again later.</string>
     <string name="no_gps">Please enable your GPS to use this feature.</string>
-    <string name="no_fine_location">Please grant this app permission to access fine location to use this feature.</string>
+    <string name="acquiring_location">Attempting to acquire your location.</string>
     <string name="cannot_save_photo">Error while saving photo</string>
     <string name="external">external</string>
     <string name="internal">internal</string>
@@ -13,4 +13,5 @@
     <string name="scanning_message">Scanning your device for more images</string>
     <string name="basic_info">Basic information:</string>
     <string name="photo_info">Photographic information:</string>
+    <string name="grant_permissions">Please grant all the requested permissions to enable the app to work correctly.</string>
 </resources>

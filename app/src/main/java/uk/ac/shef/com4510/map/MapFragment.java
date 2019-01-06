@@ -145,7 +145,7 @@ public class MapFragment extends Fragment
                                 SingleShotLocationProvider.LocationReason reason) {
                             switch (reason) {
                                 case NO_FINE_LOCATION: {
-                                    Toast.makeText(getContext(), R.string.no_fine_location, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), R.string.grant_permissions, Toast.LENGTH_SHORT).show();
                                     break;
                                 }
 
@@ -186,9 +186,10 @@ public class MapFragment extends Fragment
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
             case PermissionRequestCode.ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setLocationMarker();
+                } else {
+                    Toast.makeText(getContext(), R.string.grant_permissions, Toast.LENGTH_SHORT).show();
                 }
 
                 break;
