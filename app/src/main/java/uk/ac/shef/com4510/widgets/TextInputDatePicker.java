@@ -31,17 +31,17 @@ public class TextInputDatePicker extends TextInputEditText implements DatePicker
 
     public TextInputDatePicker(Context context) {
         super(context);
-        setInputType(EditorInfo.TYPE_CLASS_DATETIME);
+        setInputType(EditorInfo.TYPE_NULL);
     }
 
     public TextInputDatePicker(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setInputType(EditorInfo.TYPE_CLASS_DATETIME);
+        setInputType(EditorInfo.TYPE_NULL);
     }
 
     public TextInputDatePicker(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setInputType(EditorInfo.TYPE_CLASS_DATETIME);
+        setInputType(EditorInfo.TYPE_NULL);
     }
 
     @BindingAdapter({"onDateChanged"})
