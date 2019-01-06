@@ -17,8 +17,8 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import androidx.navigation.Navigation;
+import uk.ac.shef.com4510.LoadBitmapTask;
 import uk.ac.shef.com4510.R;
-import uk.ac.shef.com4510.SetImageViewSourceTask;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.databinding.GalleryItemBinding;
 
@@ -98,7 +98,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     static class ViewHolder extends RecyclerView.ViewHolder {
         private GalleryItemBinding binding;
         private WeakReference<Bitmap> bm = new WeakReference<>(null);
-        private SetImageViewSourceTask task;
+        private LoadBitmapTask task;
         private static int instanceCount;
 
         private final static String TAG = "ViewHolder";
@@ -113,12 +113,12 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
             Log.d(TAG,String.format("Instance count is: %d",instanceCount));
             binding.setLifecycleOwner(lifecycleOwner);
             this.binding = binding;
-            this.task = new SetImageViewSourceTask();
+            this.task = new LoadBitmapTask();
         }
 
         void rebind(Image image, View.OnClickListener onSelected) {
             cleanup();
-            this.task.execute(new SetImageViewSourceTask.Parameters((new_bitmap)->{
+            this.task.execute(new LoadBitmapTask.Parameters((new_bitmap)->{
                 this.bm = new WeakReference<>(new_bitmap);
                 binding.thumbnail.setImageBitmap(new_bitmap);
             },image.getPath()));
@@ -132,7 +132,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
             if(!task.isComplete()) {
                 task.cancel(true);
             }
-            task = new SetImageViewSourceTask();
+            task = new LoadBitmapTask();
             Bitmap bm = this.bm.get();
             if (bm != null) {
                 bm.recycle();

@@ -6,17 +6,17 @@ import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
-import uk.ac.shef.com4510.SetImageViewSourceTask;
+import uk.ac.shef.com4510.LoadBitmapTask;
 
 public class AsyncImageBindingAdapter {
-    private static WeakHashMap<ImageView, WeakReference<SetImageViewSourceTask>> tasks = new WeakHashMap<>();
+    private static WeakHashMap<ImageView, WeakReference<LoadBitmapTask>> tasks = new WeakHashMap<>();
 
     @BindingAdapter("app:imageAsync")
     public static void setImageAsync(ImageView view, String path) {
         //cancel any old tasks for this image
-        WeakReference<SetImageViewSourceTask> taskRef = tasks.get(view);
+        WeakReference<LoadBitmapTask> taskRef = tasks.get(view);
         if (taskRef != null) {
-            SetImageViewSourceTask task = taskRef.get();
+            LoadBitmapTask task = taskRef.get();
             if (task != null && !task.isComplete()) {
                 task.cancel(true);
             }
@@ -24,9 +24,9 @@ public class AsyncImageBindingAdapter {
         //clear old image
         view.setImageDrawable(null);
         //start new task
-        SetImageViewSourceTask task = new SetImageViewSourceTask();
+        LoadBitmapTask task = new LoadBitmapTask();
         tasks.put(view, new WeakReference<>(task));
-        task.execute(new SetImageViewSourceTask.Parameters(
+        task.execute(new LoadBitmapTask.Parameters(
                 view::setImageBitmap,
                 path
         ));
