@@ -25,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
@@ -42,6 +43,11 @@ import uk.ac.shef.com4510.details.DetailsActivity;
 public class MapFragment extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback,
             ClusterManager.OnClusterItemClickListener<MapFragment.Cluster>, ClusterManager.OnClusterClickListener<MapFragment.Cluster> {
+
+    private GoogleMap map;
+    private MapViewModel viewModel;
+    private Marker locationMarker;
+    private ClusterManager<Cluster> clusterManager;
 
     @Override
     public boolean onClusterItemClick(Cluster cluster) {
@@ -71,10 +77,6 @@ public class MapFragment extends Fragment
     class PermissionRequestCode {
         static final int ACCESS_FINE_LOCATION = 201;
     }
-
-    private GoogleMap map;
-    private MapViewModel viewModel;
-    private ClusterManager<Cluster> clusterManager;
 
     @Nullable
     @Override
@@ -119,30 +121,41 @@ public class MapFragment extends Fragment
                 == PackageManager.PERMISSION_GRANTED) {
             SingleShotLocationProvider.requestSingleUpdate(getContext(),
                     new SingleShotLocationProvider.LocationCallback() {
-                        @Override public void onLocationAvailable(Location location) {
+                        @Override public void onLocationAvailable(@NonNull Location location) {
                             double lat = location.getLatitude();
                             double lng = location.getLongitude();
 
                             LatLng pos = new LatLng(lat, lng);
-                            MarkerOptions options = new MarkerOptions()
-                                    .position(pos)
-                                    .icon(BitmapDescriptorFactory
-                                            .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-
-                            map.addMarker(options);
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14.0f));
+
+                            if (locationMarker == null) {
+                                MarkerOptions options = new MarkerOptions()
+                                        .position(pos)
+                                        .icon(BitmapDescriptorFactory
+                                                .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+
+                                locationMarker = map.addMarker(options);
+                            } else {
+                                locationMarker.setPosition(pos);
+                            }
+
                         }
 
                         @Override public void onLocationUnavailable(
                                 SingleShotLocationProvider.LocationReason reason) {
                             switch (reason) {
+                                case NO_FINE_LOCATION: {
+                                    Toast.makeText(getContext(), R.string.grant_permissions, Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+
                                 case NO_GPS: {
                                     Toast.makeText(getContext(), R.string.no_gps, Toast.LENGTH_SHORT).show();
                                     break;
                                 }
 
-                                case NO_FINE_LOCATION: {
-                                    Toast.makeText(getContext(), R.string.no_fine_location, Toast.LENGTH_SHORT).show();
+                                case NO_LAST_KNOWN: {
+                                    Toast.makeText(getContext(), R.string.no_last_known, Toast.LENGTH_SHORT).show();
                                     break;
                                 }
                             }
@@ -173,9 +186,10 @@ public class MapFragment extends Fragment
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
             case PermissionRequestCode.ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setLocationMarker();
+                } else {
+                    Toast.makeText(getContext(), R.string.grant_permissions, Toast.LENGTH_SHORT).show();
                 }
 
                 break;

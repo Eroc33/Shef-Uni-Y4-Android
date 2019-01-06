@@ -4,6 +4,9 @@ import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
+import java.util.Calendar;
+
+import uk.ac.shef.com4510.data.CalendarConverters;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.support.ObserverUtils;
 
@@ -12,6 +15,7 @@ public class EditDetailsViewModel extends DetailsViewModel {
     final public MutableLiveData<String> description = new MutableLiveData<>();
     final public MutableLiveData<Double> latitude = new MutableLiveData<>();
     final public MutableLiveData<Double> longitude = new MutableLiveData<>();
+    final public MutableLiveData<Calendar> date = new MutableLiveData<>();
 
     public EditDetailsViewModel(@NonNull Application application) {
         super(application);
@@ -20,6 +24,7 @@ public class EditDetailsViewModel extends DetailsViewModel {
             description.setValue(image.getDescription());
             latitude.setValue(image.getLatitude());
             longitude.setValue(image.getLongitude());
+            date.setValue(image.getDate());
         });
     }
 
@@ -30,10 +35,11 @@ public class EditDetailsViewModel extends DetailsViewModel {
             throw new NullPointerException("image is null in commitEdit");
         }
 
-        imageRepository.update(image.withTitleDescriptionLocation(
+        imageRepository.update(image.withBasicInfo(
                 title.getValue(),
                 description.getValue(),
                 latitude.getValue(),
-                longitude.getValue()));
+                longitude.getValue(),
+                CalendarConverters.calendarToUnixTimestamp(date.getValue())));
     }
 }
