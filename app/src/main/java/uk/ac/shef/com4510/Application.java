@@ -12,6 +12,7 @@ public class Application extends android.app.Application {
     }
 
     @Override public void onCreate() {
+        super.onCreate();
         imageDbInstance = Room.databaseBuilder(getApplicationContext(),
                 ImageDatabase.class, "com4510-image-database").build();
     }
