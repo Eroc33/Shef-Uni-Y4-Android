@@ -12,6 +12,7 @@ import java.util.List;
 import uk.ac.shef.com4510.ImageRepository;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.search.Search;
+import uk.ac.shef.com4510.support.ProxyLiveData;
 
 /**
  * Provide a @link{LiveData} of all images in the db, and progress of any ongoing loading of images.
@@ -20,7 +21,7 @@ public class GalleryViewModel extends AndroidViewModel {
     private static String TAG = "GalleryViewModel";
     private final ImageRepository imageRepository;
 
-    private LiveData<List<Image>> images;
+    private final ProxyLiveData<List<Image>> images = new ProxyLiveData<>();
 
     public final LiveData<Boolean> scanningImages = new MediatorLiveData<>();
     public final LiveData<Long> scannedImageCount = new MutableLiveData<>();
@@ -30,7 +31,7 @@ public class GalleryViewModel extends AndroidViewModel {
     public GalleryViewModel(@NonNull Application application) {
         super(application);
         imageRepository = new ImageRepository(application);
-        images = imageRepository.getAllImages();
+        images.setSource(imageRepository.getAllImages());
         ((MediatorLiveData<Boolean>)scanningImages).addSource(scannedImageCount,(count)->{
             updateScanningStatus(count,totalImagesToScan.getValue());
         });
@@ -44,10 +45,12 @@ public class GalleryViewModel extends AndroidViewModel {
     }
 
     public void applySearch(Search search) {
-        images = imageRepository.search(search);
+        images.setSource(imageRepository.search(search));
     }
 
-    public void withExactImages(List<String> paths){ images = imageRepository.findExact(paths); }
+    public void withExactImages(List<String> paths){
+        images.setSource(imageRepository.findExact(paths));
+    }
 
     public void setProgress(long count, long total,int stageResourceId){
         ((MutableLiveData<Long>) scannedImageCount).postValue(count);

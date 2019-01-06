@@ -10,34 +10,21 @@ import android.support.annotation.NonNull;
 import uk.ac.shef.com4510.ImageRepository;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.support.BitmapLoader;
+import uk.ac.shef.com4510.support.ProxyLiveData;
 
 /**
  * Provides an image and bitmap from the database id (the path).
  */
 public class DetailsViewModel extends AndroidViewModel {
-    protected final ImageRepository imageRepository;
-    private MediatorLiveData<Image> image = new MediatorLiveData<>();
-    private LiveData<Image> imageSource;
+    private final ImageRepository imageRepository;
+    private final MediatorLiveData<Image> image = new MediatorLiveData<>();
+    private final ProxyLiveData<Image> imageSource = new ProxyLiveData<>();
     //Used to provide the bitmap
-    private BitmapLoader bitmapLoader = new BitmapLoader();
+    private final BitmapLoader bitmapLoader = new BitmapLoader();
 
     public DetailsViewModel(@NonNull Application application) {
         super(application);
         imageRepository = new ImageRepository(application);
-    }
-
-    public LiveData<Image> getImage() {
-        return image;
-    }
-    public LiveData<Bitmap> getBitmap() {
-        return bitmapLoader.bitmap;
-    }
-
-    public void setPath(String path) {
-        if (imageSource != null) {
-            image.removeSource(imageSource);
-        }
-        imageSource = imageRepository.getImage(path);
         image.addSource(imageSource, newImage -> {
             //if image is null, or unchanged don't reload stuff
             if (newImage == null || newImage.equals(image.getValue())) {
@@ -52,5 +39,16 @@ public class DetailsViewModel extends AndroidViewModel {
             }
             image.setValue(newImage);
         });
+    }
+
+    public LiveData<Image> getImage() {
+        return image;
+    }
+    public LiveData<Bitmap> getBitmap() {
+        return bitmapLoader.bitmap;
+    }
+
+    public void setPath(String path) {
+        imageSource.setSource(imageRepository.getImage(path));
     }
 }

@@ -31,7 +31,7 @@ public class GalleryFragment
         extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback, RecyclerViewAdapterProvider, GalleryActions {
 
-    private static final String TAG = "ScanningActivity";
+    private static final String TAG = "GalleryFragment";
 
     private GalleryFragmentBinding binding;
     private RecyclerView.Adapter<?> recyclerViewAdapter;
@@ -66,14 +66,14 @@ public class GalleryFragment
 
         //execute search
         Search search = getArguments().getParcelable("search");
+        List<String> exactPaths = getArguments().getStringArrayList("showExact");
         if (search != null) {
+            Log.d(TAG,"applying Search");
             viewModel.applySearch(search);
-        }else{
+        }else if(exactPaths != null){
             //or display exact list, such as from a map cluster being clicked.
-            List<String> exactPaths = getArguments().getStringArrayList("showExact");
-            if(exactPaths != null){
-                viewModel.withExactImages(exactPaths);
-            }
+            Log.d(TAG,String.format("showing exact list of images (length: %d)",exactPaths.size()));
+            viewModel.withExactImages(exactPaths);
         }
 
         binding.setViewModel(viewModel);

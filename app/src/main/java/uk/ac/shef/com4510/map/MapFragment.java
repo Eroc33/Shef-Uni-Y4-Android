@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ public class MapFragment extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback,
             ClusterManager.OnClusterItemClickListener<MapFragment.Cluster>, ClusterManager.OnClusterClickListener<MapFragment.Cluster> {
 
+    public static final String TAG = "MapFragment";
     private GoogleMap map;
     private MapViewModel viewModel;
     private Marker locationMarker;
@@ -87,6 +89,8 @@ public class MapFragment extends Fragment
         for(Cluster c : clusters){
             paths.add(c.image.getPath());
         }
+
+        Log.d(TAG,"navigating to gallery fragment with showExact");
         //launch gallery view with that set of images so the user can choose the one they want.
         bundle.putStringArrayList("showExact", paths);
         Navigation.findNavController(getView()).navigate(R.id.action_mapFragment_to_galleryFragment, bundle);
