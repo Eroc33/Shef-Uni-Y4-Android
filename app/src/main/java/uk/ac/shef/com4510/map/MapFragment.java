@@ -25,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
@@ -42,6 +43,11 @@ import uk.ac.shef.com4510.details.DetailsActivity;
 public class MapFragment extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback,
             ClusterManager.OnClusterItemClickListener<MapFragment.Cluster>, ClusterManager.OnClusterClickListener<MapFragment.Cluster> {
+
+    private GoogleMap map;
+    private MapViewModel viewModel;
+    private Marker locationMarker;
+    private ClusterManager<Cluster> clusterManager;
 
     @Override
     public boolean onClusterItemClick(Cluster cluster) {
@@ -71,10 +77,6 @@ public class MapFragment extends Fragment
     class PermissionRequestCode {
         static final int ACCESS_FINE_LOCATION = 201;
     }
-
-    private GoogleMap map;
-    private MapViewModel viewModel;
-    private ClusterManager<Cluster> clusterManager;
 
     @Nullable
     @Override
@@ -124,13 +126,19 @@ public class MapFragment extends Fragment
                             double lng = location.getLongitude();
 
                             LatLng pos = new LatLng(lat, lng);
-                            MarkerOptions options = new MarkerOptions()
-                                    .position(pos)
-                                    .icon(BitmapDescriptorFactory
-                                            .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-
-                            map.addMarker(options);
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14.0f));
+
+                            if (locationMarker == null) {
+                                MarkerOptions options = new MarkerOptions()
+                                        .position(pos)
+                                        .icon(BitmapDescriptorFactory
+                                                .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+
+                                locationMarker = map.addMarker(options);
+                            } else {
+                                locationMarker.setPosition(pos);
+                            }
+
                         }
 
                         @Override public void onLocationUnavailable(
