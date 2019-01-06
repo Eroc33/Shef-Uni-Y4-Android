@@ -2,19 +2,23 @@ package uk.ac.shef.com4510.gallery;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.AsyncListDiffer;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import androidx.navigation.Navigation;
 import uk.ac.shef.com4510.R;
+import uk.ac.shef.com4510.SetImageViewSourceTask;
 import uk.ac.shef.com4510.data.Image;
 import uk.ac.shef.com4510.databinding.GalleryItemBinding;
 
@@ -24,6 +28,8 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     private final GalleryViewModel viewModel;
     private final LifecycleOwner lifecycleOwner;
     private AsyncListDiffer<Image> differ = new AsyncListDiffer<>(this,DIFF_CALLBACK);
+
+    private final Bitmap EMPTY_BITMAP = Bitmap.createBitmap(new int[]{0},1,1,Bitmap.Config.ALPHA_8);
 
     private static final DiffUtil.ItemCallback<Image> DIFF_CALLBACK
             = new DiffUtil.ItemCallback<Image>() {
@@ -71,6 +77,15 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     }
 
     @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        holder.cleanup();
+        holder.binding.setImage(null);
+        holder.binding.thumbnail.setImageBitmap(EMPTY_BITMAP);
+        holder.binding.invalidateAll();
+        holder.binding.unbind();
+    }
+
+    @Override
     public int getItemCount() {
         return differ.getCurrentList().size();
     }
@@ -82,6 +97,11 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         private GalleryItemBinding binding;
+        private WeakReference<Bitmap> bm = new WeakReference<>(null);
+        private SetImageViewSourceTask task;
+        private static int instanceCount;
+
+        private final static String TAG = "ViewHolder";
 
         ViewHolder(LayoutInflater inflater, ViewGroup parent, LifecycleOwner lifecycleOwner) {
             this(GalleryItemBinding.inflate(inflater, parent, false),lifecycleOwner);
@@ -89,14 +109,34 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
 
         ViewHolder(GalleryItemBinding binding, LifecycleOwner lifecycleOwner) {
             super(binding.getRoot());
+            instanceCount+=1;
+            Log.d(TAG,String.format("Instance count is: %d",instanceCount));
             binding.setLifecycleOwner(lifecycleOwner);
             this.binding = binding;
+            this.task = new SetImageViewSourceTask();
         }
 
         void rebind(Image image, View.OnClickListener onSelected) {
+            cleanup();
+            this.task.execute(new SetImageViewSourceTask.Parameters((new_bitmap)->{
+                this.bm = new WeakReference<>(new_bitmap);
+                binding.thumbnail.setImageBitmap(new_bitmap);
+            },image.getPath()));
+
             binding.setImage(image);
             binding.setSelectedListener(onSelected);
             binding.executePendingBindings();
+        }
+
+        void cleanup(){
+            if(!task.isComplete()) {
+                task.cancel(true);
+            }
+            task = new SetImageViewSourceTask();
+            Bitmap bm = this.bm.get();
+            if (bm != null) {
+                bm.recycle();
+            }
         }
     }
 }

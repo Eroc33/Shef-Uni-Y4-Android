@@ -32,7 +32,7 @@ public class ImageScannerService extends IntentService {
 
     private static final Set<Uri> STORAGE_URIS;
     private static final String TAG = ImageScannerService.class.getCanonicalName();
-    public static final int BATCH_SIZE = 512;
+    public static final int BATCH_SIZE = 1;
 
     static {
         STORAGE_URIS = new HashSet<>();

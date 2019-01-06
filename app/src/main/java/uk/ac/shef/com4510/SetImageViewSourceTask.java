@@ -3,7 +3,6 @@ package uk.ac.shef.com4510;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.widget.ImageView;
 
 public class SetImageViewSourceTask extends AsyncTask<SetImageViewSourceTask.Parameters, Void, SetImageViewSourceTask.Parameters[]> {
 
@@ -20,7 +19,8 @@ public class SetImageViewSourceTask extends AsyncTask<SetImageViewSourceTask.Par
     @Override
     protected void onPostExecute(SetImageViewSourceTask.Parameters[] parameters) {
         for (SetImageViewSourceTask.Parameters parameter : parameters) {
-            parameter.imageView.setImageBitmap(parameter.bitmap);
+            parameter.callback.accept(parameter.bitmap);
+            parameter.bitmap = null;
         }
         complete = true;
     }
@@ -29,13 +29,17 @@ public class SetImageViewSourceTask extends AsyncTask<SetImageViewSourceTask.Par
         return complete;
     }
 
+    public interface Callback{
+        void accept(Bitmap bitmap);
+    }
+
     public static class Parameters {
-        private final ImageView imageView;
+        private final Callback callback;
         private final String path;
         private Bitmap bitmap;
 
-        public Parameters(ImageView imageView, String path) {
-            this.imageView = imageView;
+        public Parameters(Callback callback, String path) {
+            this.callback = callback;
             this.path = path;
         }
     }

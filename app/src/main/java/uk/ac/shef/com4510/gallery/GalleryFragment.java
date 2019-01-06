@@ -33,6 +33,7 @@ public class GalleryFragment
     private static final String TAG = "ScanningActivity";
 
     private GalleryFragmentBinding binding;
+    private RecyclerView.Adapter<?> recyclerViewAdapter;
 
     @Override
     public void openCamera() {
@@ -47,7 +48,7 @@ public class GalleryFragment
 
     @Override
     public RecyclerView.Adapter<?> getAdapter() {
-        return new GalleryRecyclerViewAdapter(getContext(), viewModel, this);
+        return recyclerViewAdapter;
     }
 
     @Nullable
@@ -58,6 +59,7 @@ public class GalleryFragment
         binding.setAdapterProvider(this);
         binding.setActions(this);
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
+        recyclerViewAdapter = new GalleryRecyclerViewAdapter(getContext(), viewModel, this);
         Search search = getArguments().getParcelable("search");
         if (search != null) {
             viewModel.applySearch(search);
