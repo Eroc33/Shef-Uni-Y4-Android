@@ -18,7 +18,7 @@ import android.support.annotation.NonNull;
  */
 public class SingleShotLocationProvider {
 
-    private static final long LOCATION_TIMEOUT = 10000;
+    private static final long LOCATION_TIMEOUT = 5000;
 
     public enum LocationReason {NO_FINE_LOCATION, NO_GPS, NO_LAST_KNOWN}
 
