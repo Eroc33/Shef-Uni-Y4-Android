@@ -3,6 +3,7 @@ package uk.ac.shef.com4510;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.List;
@@ -44,7 +45,16 @@ public class ImageRepository {
             endDate = (Calendar) startDate.clone();
             endDate.add(Calendar.HOUR,24);
         }
-        return app.getImageDb().imageDao().search(search.getTitle(), search.getDescription(), CalendarConverters.calendarToUnixTimestamp(startDate), CalendarConverters.calendarToUnixTimestamp(endDate));
+        String title = search.getTitle();
+        if (title != null){
+            title = String.format("%%%s%%",title);
+        }
+        String description = search.getDescription();
+        if (description != null){
+            description = String.format("%%%s%%",description);
+        }
+        Log.d("ImageRepository",String.format("searching with title: `%s` and description: `%s`",title,description));
+        return app.getImageDb().imageDao().search(title, description, CalendarConverters.calendarToUnixTimestamp(startDate), CalendarConverters.calendarToUnixTimestamp(endDate));
     }
 
     public void update(Image image) {
