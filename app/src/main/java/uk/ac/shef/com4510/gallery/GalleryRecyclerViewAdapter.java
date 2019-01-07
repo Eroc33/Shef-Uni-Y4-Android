@@ -112,7 +112,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
         void rebind(Image image, View.OnClickListener onSelected) {
             cleanup();
 
-            bitmapLoader.setSourcePath(image.getPath());
+            bitmapLoader.setSourcePath(image.getBestThumbnailPath());
 
             binding.setImage(image);
             binding.setSelectedListener(onSelected);
