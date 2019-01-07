@@ -64,7 +64,7 @@ public class CameraActivity extends AppCompatActivity {
         } else {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-            Toast.makeText(getApplicationContext(), R.string.grant_permissions, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.no_camera, Toast.LENGTH_SHORT).show();
         }
     }
 
