@@ -62,6 +62,9 @@ public class GalleryFragment
         binding.setAdapterProvider(this);
         binding.setActions(this);
         viewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
+
+        viewModel.hasCamera.postValue(requireContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA));
+
         recyclerViewAdapter = new GalleryRecyclerViewAdapter(viewModel, this);
 
         //execute search

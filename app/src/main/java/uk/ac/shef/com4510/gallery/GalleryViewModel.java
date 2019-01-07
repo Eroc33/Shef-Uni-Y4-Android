@@ -23,6 +23,8 @@ public class GalleryViewModel extends AndroidViewModel {
 
     private final ProxyLiveData<List<Image>> images = new ProxyLiveData<>();
 
+    public final MutableLiveData<Boolean> hasCamera = new MutableLiveData<>();
+
     public final LiveData<Boolean> scanningImages = new MediatorLiveData<>();
     public final LiveData<Long> scannedImageCount = new MutableLiveData<>();
     public final LiveData<Long> totalImagesToScan = new MutableLiveData<>();
