@@ -13,6 +13,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
+/**
+ * Provides a one-time location update. Requires GPS and permission to access fine location.
+ */
 public class SingleShotLocationProvider {
 
     private static final long LOCATION_TIMEOUT = 10000;
@@ -24,6 +27,11 @@ public class SingleShotLocationProvider {
         void onLocationUnavailable(LocationReason reason);
     }
 
+    /**
+     * Request a single location update.
+     * @param context The application context
+     * @param callback A callback to receive the location or a reason why it was unavailable.
+     */
     public static void requestSingleUpdate(Context context, LocationCallback callback) {
         int fineLocation = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
 
@@ -40,6 +48,7 @@ public class SingleShotLocationProvider {
                     public void onLocationChanged(Location location) {
                         callback.onLocationAvailable(location);
                         locationManager.removeUpdates(this);
+                        // Stop the timeout once we have a location
                         myHandler.removeCallbacksAndMessages(null);
                     }
 
@@ -56,10 +65,12 @@ public class SingleShotLocationProvider {
                 Runnable timeoutRunnable = () -> {
                     locationManager.removeUpdates(locationListener);
 
+                    // Use last known location once we've ran out of time
                     String bestProvider = locationManager.getBestProvider(criteria,false);
                     Location locationLastKnown = locationManager.getLastKnownLocation(bestProvider);
 
                     if (locationLastKnown == null) {
+                        // Last known location might not exist
                         callback.onLocationUnavailable(LocationReason.NO_LAST_KNOWN);
                     } else {
                         callback.onLocationAvailable(locationLastKnown);
