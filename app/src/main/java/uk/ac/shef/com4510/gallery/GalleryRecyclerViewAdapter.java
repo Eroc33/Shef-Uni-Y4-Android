@@ -103,6 +103,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
         ViewHolder(GalleryItemBinding binding, LifecycleOwner lifecycleOwner) {
             super(binding.getRoot());
             binding.setLifecycleOwner(lifecycleOwner);
+            this.bitmapLoader.setDownsample(true);
             this.bitmapLoader.bitmap.observe(lifecycleOwner,(bitmap)->{
                 this.binding.setBitmap(bitmap);
             });

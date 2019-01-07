@@ -13,6 +13,7 @@ public class BitmapLoader {
     private String path;
 
     public final LiveData<Bitmap> bitmap = new MutableLiveData<>();
+    private boolean downsample = false;
 
     /**
      * Begins loading a bitmap for an image from the given task
@@ -34,7 +35,7 @@ public class BitmapLoader {
             return;
         }
         task = new LoadBitmapTask();
-        task.execute(new LoadBitmapTask.Parameters(this::outputBitmap,path));
+        task.execute(new LoadBitmapTask.Parameters(this::outputBitmap,path,this.downsample));
     }
 
     /**
@@ -50,5 +51,9 @@ public class BitmapLoader {
 
     private synchronized void outputBitmap(Bitmap bitmap) {
         ((MutableLiveData<Bitmap>)this.bitmap).postValue(bitmap);
+    }
+
+    public void setDownsample(boolean downsample) {
+        this.downsample = downsample;
     }
 }
