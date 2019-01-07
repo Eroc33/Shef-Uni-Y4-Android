@@ -11,27 +11,32 @@ public class LoadBitmapTask extends AsyncTask<LoadBitmapTask.Parameters, Void, L
 
     private boolean complete;
 
-    private static final int THUMBNAIL_WIDTH = 256;
-    private static final int THUMBNAIL_HEIGHT = 256;
+    //TODO: Arguably these should scale with screen density.
+    private static final int THUMBNAIL_WIDTH = 512;
+    private static final int THUMBNAIL_HEIGHT = 512;
 
+    /**
+     * Calculates per image downsampling
+     * @param path the file location for the image of which to calculate the sample size
+     * @return
+     */
     private static int calculateDownsampleSize(String path) {
+        //get image size
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(path,options);
 
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
+        int height = options.outHeight;
+        int width = options.outWidth;
         int inSampleSize = 1;
 
-        final int halfHeight = height / 2;
-        final int halfWidth = width / 2;
-
-        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-        // height and width larger than the requested height and width.
-        while ((halfHeight / inSampleSize) > THUMBNAIL_HEIGHT
-                && (halfWidth / inSampleSize) > THUMBNAIL_WIDTH) {
+        // calculate a power of two sample size that makes the image approximately
+        // THUMBNAIL_HEIGHTxTHUMBNAIL_WIDTH in size
+        while (height > THUMBNAIL_HEIGHT
+                && width > THUMBNAIL_WIDTH) {
             inSampleSize *= 2;
+            height /= 2;
+            width /= 2;
         }
 
         return inSampleSize;
@@ -41,7 +46,7 @@ public class LoadBitmapTask extends AsyncTask<LoadBitmapTask.Parameters, Void, L
     protected LoadBitmapTask.Parameters[] doInBackground(Parameters... params) {
         for (Parameters param : params) {
             if(param.downsample) {
-                BitmapFactory.Options options =new BitmapFactory.Options();
+                BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = calculateDownsampleSize(param.path);
                 param.bitmap = BitmapFactory.decodeFile(param.path,options);
             }else {
