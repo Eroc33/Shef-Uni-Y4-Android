@@ -123,6 +123,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
 
         void cleanup(){
             bitmapLoader.cancel();
+            sbinding.setBitmap(null);
         }
 
         void recycle() {
