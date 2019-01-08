@@ -46,7 +46,6 @@ public class BitmapLoader {
             task.cancel(true);
             task = null;
         }
-        outputBitmap(null);
     }
 
     private synchronized void outputBitmap(Bitmap bitmap) {
