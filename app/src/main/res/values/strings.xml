@@ -10,7 +10,7 @@
     <string name="external">external</string>
     <string name="internal">internal</string>
     <string name="load_progress">%d/%d %s images loaded</string>
-    <string name="edit_location">Long press to set a new location</string>
+    <string name="edit_location">Long press to set a new location, or tap the location button</string>
     <string name="scanning_message">Scanning your device for more images</string>
     <string name="basic_info">Basic information:</string>
     <string name="photo_info">Photographic information:</string>

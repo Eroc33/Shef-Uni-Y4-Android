@@ -20,6 +20,19 @@
             android:layout_height="300dp"
             app:layout_constraintTop_toTopOf="parent"/>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_location_white_24dp"
+            app:backgroundTint="@color/colorAccent"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="@id/map"
+            app:layout_constraintRight_toRightOf="@id/map"
+            android:onClick="@{(btn) -> actions.getLocation()}"/>
+
         <TextView
             android:id="@+id/edit_location_description"
             android:layout_width="match_parent"
