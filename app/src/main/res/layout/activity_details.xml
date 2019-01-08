@@ -38,7 +38,7 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/selected_image"
                     android:scaleType="fitCenter"
-                    app:imageAsync="@{viewmodel.bitmap}"
+                    app:imageStatic="@{viewmodel.bitmap}"
                     app:layout_constraintTop_toTopOf="parent"/>
 
                 <fragment
