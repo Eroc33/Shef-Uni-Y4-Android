@@ -166,20 +166,22 @@ public class MapFragment extends Fragment
 
                         @Override public void onLocationUnavailable(
                                 SingleShotLocationProvider.LocationReason reason) {
-                            switch (reason) {
-                                case NO_FINE_LOCATION: {
-                                    Toast.makeText(getContext(), R.string.grant_permissions, Toast.LENGTH_SHORT).show();
-                                    break;
-                                }
+                            if (getContext() != null) {
+                                switch (reason) {
+                                    case NO_FINE_LOCATION: {
+                                        Toast.makeText(getContext(), R.string.grant_permissions, Toast.LENGTH_SHORT).show();
+                                        break;
+                                    }
 
-                                case NO_GPS: {
-                                    Toast.makeText(getContext(), R.string.no_gps, Toast.LENGTH_SHORT).show();
-                                    break;
-                                }
+                                    case NO_GPS: {
+                                        Toast.makeText(getContext(), R.string.no_gps, Toast.LENGTH_SHORT).show();
+                                        break;
+                                    }
 
-                                case NO_LAST_KNOWN: {
-                                    Toast.makeText(getContext(), R.string.no_last_known, Toast.LENGTH_SHORT).show();
-                                    break;
+                                    case NO_LAST_KNOWN: {
+                                        Toast.makeText(getContext(), R.string.no_last_known, Toast.LENGTH_SHORT).show();
+                                        break;
+                                    }
                                 }
                             }
                         }
