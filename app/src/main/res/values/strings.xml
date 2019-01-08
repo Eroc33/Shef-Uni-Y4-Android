@@ -3,7 +3,7 @@
     <string name="selected_image">Selected Image</string>
     <string name="coordinate_format_string">Latitude: %f, Longitude: %f</string>
     <string name="getting_location">Please wait while your location is acquired.</string>
-    <string name="no_last_known">Couldn\'t acquire your location right now. Please try again later.</string>
+    <string name="no_last_known">Couldn\'t acquire your location right now. Please try again later, or try using high accuracy mode.</string>
     <string name="no_gps">Please enable your GPS to use location tracking.</string>
     <string name="acquiring_location">Attempting to acquire your location.</string>
     <string name="cannot_save_photo">Error while saving photo</string>

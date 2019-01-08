@@ -90,6 +90,7 @@ public class Image {
     public Image withExif() {
         try {
             ExifInterface exif = new ExifInterface(path);
+            // If the Exif has location data included, it replaces that which is currently stored for the Image.
             double exifLatitude = exif.getAttributeDouble(ExifInterface.TAG_GPS_LATITUDE, latitude);
             double exifLongitude = exif.getAttributeDouble(ExifInterface.TAG_GPS_LONGITUDE, longitude);
             int iso = exif.getAttributeInt(ExifInterface.TAG_ISO_SPEED, 0);

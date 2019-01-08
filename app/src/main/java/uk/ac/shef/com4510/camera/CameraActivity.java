@@ -43,12 +43,6 @@ public class CameraActivity extends AppCompatActivity {
         tryOpenCamera();
     }
 
-    private void fallbackToMain() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
-
     private void tryOpenCamera() {
         if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             if ((ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -63,9 +57,8 @@ public class CameraActivity extends AppCompatActivity {
                 openCamera();
             }
         } else {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
             Toast.makeText(getApplicationContext(), R.string.no_camera, Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
