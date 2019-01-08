@@ -17,9 +17,6 @@ import android.support.annotation.NonNull;
  * Provides a one-time location update. Requires GPS and permission to access fine location.
  */
 public class SingleShotLocationProvider {
-
-    private static final long LOCATION_TIMEOUT = 5000;
-
     public enum LocationReason {NO_FINE_LOCATION, NO_GPS, NO_LAST_KNOWN}
 
     public interface LocationCallback {
@@ -29,10 +26,11 @@ public class SingleShotLocationProvider {
 
     /**
      * Request a single location update.
-     * @param context The application context
+     * @param context The application context.
      * @param callback A callback to receive the location or a reason why it was unavailable.
+     * @param timeout How long to wait before falling back to last known location.
      */
-    public static void requestSingleUpdate(Context context, LocationCallback callback) {
+    public static void requestSingleUpdate(Context context, LocationCallback callback, int timeout) {
         int fineLocation = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (fineLocation == PackageManager.PERMISSION_GRANTED) {
@@ -79,7 +77,7 @@ public class SingleShotLocationProvider {
 
                 criteria.setAccuracy(Criteria.ACCURACY_FINE);
                 locationManager.requestSingleUpdate(criteria, locationListener, myLooper);
-                myHandler.postDelayed(timeoutRunnable, LOCATION_TIMEOUT);
+                myHandler.postDelayed(timeoutRunnable, timeout);
             } else {
                 callback.onLocationUnavailable(LocationReason.NO_GPS);
             }

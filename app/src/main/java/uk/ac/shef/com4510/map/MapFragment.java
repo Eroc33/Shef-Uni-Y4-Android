@@ -47,6 +47,7 @@ public class MapFragment extends Fragment
             ClusterManager.OnClusterItemClickListener<MapFragment.Cluster>, ClusterManager.OnClusterClickListener<MapFragment.Cluster> {
 
     public static final String TAG = "MapFragment";
+    private static final int LOCATION_TIMEOUT = 10000;
     private GoogleMap map;
     private MapViewModel viewModel;
     private Marker locationMarker;
@@ -140,6 +141,7 @@ public class MapFragment extends Fragment
         Context context = requireContext();
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getContext(), R.string.getting_location, Toast.LENGTH_SHORT).show();
             SingleShotLocationProvider.requestSingleUpdate(context,
                     new SingleShotLocationProvider.LocationCallback() {
                         @Override public void onLocationAvailable(@NonNull Location location) {
@@ -181,7 +183,7 @@ public class MapFragment extends Fragment
                                 }
                             }
                         }
-                    });
+                    }, LOCATION_TIMEOUT);
         } else {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PermissionRequestCode.ACCESS_FINE_LOCATION);
