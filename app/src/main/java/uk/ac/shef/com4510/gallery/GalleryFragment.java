@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 import androidx.navigation.Navigation;
 import uk.ac.shef.com4510.ImageScannerService;
@@ -69,14 +68,14 @@ public class GalleryFragment
 
         //execute search
         Search search = getArguments().getParcelable("search");
-        List<String> exactPaths = getArguments().getStringArrayList("showExact");
+        long[] exactIds = getArguments().getLongArray("showExact");
         if (search != null) {
             Log.d(TAG,"applying Search");
             viewModel.applySearch(search);
-        }else if(exactPaths != null){
+        }else if(exactIds != null){
             //or display exact list, such as from a map cluster being clicked.
-            Log.d(TAG,String.format("showing exact list of images (length: %d)",exactPaths.size()));
-            viewModel.withExactImages(exactPaths);
+            Log.d(TAG,String.format("showing exact list of images (length: %d)",exactIds.length));
+            viewModel.withExactImages(exactIds);
         }
 
         binding.setViewModel(viewModel);
