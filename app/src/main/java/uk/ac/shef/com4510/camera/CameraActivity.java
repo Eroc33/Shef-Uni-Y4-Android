@@ -34,6 +34,7 @@ import static android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "CameraActivity";
+    private static final int LOCATION_TIMEOUT = 2500;
     private File currentCaptureFile;
 
     @Override
@@ -115,7 +116,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void savePhoto(File file) {
-        savePhoto(file,0,0);
+        savePhoto(file,0.0,0.0);
     }
 
     private void savePhoto(File file, double lat, double lng) {
@@ -125,8 +126,6 @@ public class CameraActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), R.string.cannot_save_photo, Toast.LENGTH_SHORT).show();
-        } finally {
-            finish();
         }
     }
 
@@ -155,13 +154,13 @@ public class CameraActivity extends AppCompatActivity {
                                     public void onLocationUnavailable(SingleShotLocationProvider.LocationReason reason) {
                                         savePhoto(file);
                                     }
-                                });
+                                }, LOCATION_TIMEOUT);
                     } else {
                         savePhoto(file);
                     }
-                } else {
-                    finish();
                 }
+
+                finish();
             }
         }
     }
