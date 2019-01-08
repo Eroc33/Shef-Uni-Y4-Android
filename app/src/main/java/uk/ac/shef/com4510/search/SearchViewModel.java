@@ -14,13 +14,14 @@ public class SearchViewModel extends AndroidViewModel {
 
     final public MutableLiveData<String> title = new MutableLiveData<>();
     final public MutableLiveData<String> description = new MutableLiveData<>();
-    final public MutableLiveData<Calendar> date = new MutableLiveData<>();
+    final public MutableLiveData<Calendar> startDate = new MutableLiveData<>();
+    final public MutableLiveData<Calendar> endDate = new MutableLiveData<>();
 
     public SearchViewModel(@NonNull Application application) {
         super(application);
     }
 
     public Search makeSearch() {
-        return new Search(title.getValue(), description.getValue(), date.getValue());
+        return new Search(title.getValue(), description.getValue(), startDate.getValue(), endDate.getValue());
     }
 }

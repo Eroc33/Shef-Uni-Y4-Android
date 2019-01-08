@@ -2,8 +2,11 @@ package uk.ac.shef.com4510.search;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import uk.ac.shef.com4510.data.CalendarConverters;
 
@@ -22,24 +25,40 @@ public class Search implements Parcelable {
             return new Search[size];
         }
     };
+
     private String title;
     private String description;
-    private Calendar date;
+    private Calendar startDate;
+    private Calendar endDate;
 
-    public Search(String title, String description, Calendar date) {
+    public Search(String title, String description, Calendar startDate, Calendar endDate) {
         this.title = title;
         this.description = description;
-        this.date = date;
+
+        if (startDate != null) {
+            this.startDate = startDate;
+        } else {
+            // If no start date is given then we use the beginning of (Unix) time...
+            startDate = Calendar.getInstance();
+            startDate.setTime(new Date(0L));
+            this.startDate = startDate;
+        }
+
+        if (endDate != null) {
+            this.endDate = endDate;
+        } else {
+            // Visa versa when no end date is given.
+            endDate = Calendar.getInstance();
+            endDate.setTime(new Date(Long.MAX_VALUE));
+            this.endDate = endDate;
+        }
     }
 
     protected Search(Parcel in) {
         title = in.readString();
         description = in.readString();
-        if (in.readByte() == 1) {
-            date = CalendarConverters.calendarFromUnixTimestamp(in.readLong());
-        } else {
-            date = null;
-        }
+        startDate = CalendarConverters.calendarFromUnixTimestamp(in.readLong());
+        endDate = CalendarConverters.calendarFromUnixTimestamp(in.readLong());
     }
 
     public String getTitle() {
@@ -58,25 +77,18 @@ public class Search implements Parcelable {
         this.description = description;
     }
 
-    public Calendar getDate() {
-        return date;
+    public Calendar getStartDate() {
+        return startDate;
     }
 
-    public void setDate(Calendar date) {
-        this.date = date;
-    }
+    public Calendar getEndDate() { return endDate; }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
         dest.writeString(description);
-        Long timeStamp = CalendarConverters.calendarToUnixTimestamp(date);
-        if (timeStamp != null) {
-            dest.writeByte((byte) 1);
-            dest.writeLong(timeStamp);
-        } else {
-            dest.writeByte((byte) 0);
-        }
+        dest.writeLong(CalendarConverters.calendarToUnixTimestamp(startDate));
+        dest.writeLong(CalendarConverters.calendarToUnixTimestamp(endDate));
     }
 
     @Override

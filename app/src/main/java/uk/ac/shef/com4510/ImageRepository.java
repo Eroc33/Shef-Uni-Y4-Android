@@ -30,30 +30,36 @@ public class ImageRepository {
     }
 
     public LiveData<List<Image>> search(Search search) {
-        Calendar searchDate = search.getDate();
-        Calendar startDate = null;
-        Calendar endDate = null;
-        if(searchDate != null){
-            startDate = Calendar.getInstance();
-            startDate.set(Calendar.YEAR,search.getDate().get(Calendar.YEAR));
-            startDate.set(Calendar.MONTH,search.getDate().get(Calendar.MONTH));
-            startDate.set(Calendar.DAY_OF_MONTH,search.getDate().get(Calendar.DAY_OF_MONTH));
-            startDate.set(Calendar.HOUR_OF_DAY,0);
-            startDate.set(Calendar.MINUTE,0);
-            startDate.set(Calendar.SECOND,0);
-            startDate.set(Calendar.MILLISECOND,0);
-            endDate = (Calendar) startDate.clone();
-            endDate.add(Calendar.HOUR,24);
-        }
         String title = search.getTitle();
+        String description = search.getDescription();
+        Calendar startDate = Calendar.getInstance();
+        Calendar endDate = Calendar.getInstance();
+
         if (title != null){
             title = String.format("%%%s%%",title);
         }
-        String description = search.getDescription();
+
         if (description != null){
             description = String.format("%%%s%%",description);
         }
-        Log.d("ImageRepository",String.format("searching with title: `%s` and description: `%s`",title,description));
+
+        startDate.set(Calendar.YEAR, search.getStartDate().get(Calendar.YEAR));
+        startDate.set(Calendar.MONTH, search.getStartDate().get(Calendar.MONTH));
+        startDate.set(Calendar.DAY_OF_MONTH, search.getStartDate().get(Calendar.DAY_OF_MONTH));
+        startDate.set(Calendar.HOUR_OF_DAY,0);
+        startDate.set(Calendar.MINUTE,0);
+        startDate.set(Calendar.SECOND,0);
+        startDate.set(Calendar.MILLISECOND,0);
+
+        endDate.set(Calendar.YEAR, search.getEndDate().get(Calendar.YEAR));
+        endDate.set(Calendar.MONTH, search.getEndDate().get(Calendar.MONTH));
+        endDate.set(Calendar.DAY_OF_MONTH, search.getEndDate().get(Calendar.DAY_OF_MONTH));
+        endDate.set(Calendar.HOUR_OF_DAY,0);
+        endDate.set(Calendar.MINUTE,0);
+        endDate.set(Calendar.SECOND,0);
+        endDate.set(Calendar.MILLISECOND,0);
+
+        Log.d("ImageRepository", String.format("searching with title: `%s` and description: `%s`",title,description));
         return app.getImageDb().imageDao().search(title, description, CalendarConverters.calendarToUnixTimestamp(startDate), CalendarConverters.calendarToUnixTimestamp(endDate));
     }
 

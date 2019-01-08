@@ -23,5 +23,7 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="date">Date</string>
+    <string name="start_date">Start date (inclusive)</string>
+    <string name="end_date">End date (exclusive)</string>
     <string name="location_not_set">Location not set</string>
 </resources>
