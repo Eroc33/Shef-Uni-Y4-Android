@@ -31,12 +31,15 @@ public abstract class ImageDao {
     @Query("SELECT * FROM image where path = :path")
     public abstract LiveData<Image> getImage(String path);
 
+    @Query("SELECT * FROM image where id = :id")
+    public abstract LiveData<Image> getImage(long id);
+
     @Query("SELECT * FROM image where (title LIKE :title OR :title IS NULL) AND (description LIKE :description OR :description IS NULL) AND ((timestamp BETWEEN :startTimeStamp AND :endTimeStamp) OR (:startTimeStamp == 0 OR :endTimeStamp == 0))")
     public abstract LiveData<List<Image>> search(String title, String description, long startTimeStamp, long endTimeStamp);
 
     @Update
     public abstract void updateSync(Image image);
 
-    @Query("SELECT * FROM image where path in (:paths)")
-    public abstract LiveData<List<Image>> findAll(List<String> paths);
+    @Query("SELECT * FROM image where id in (:ids)")
+    public abstract LiveData<List<Image>> findAll(long[] ids);
 }

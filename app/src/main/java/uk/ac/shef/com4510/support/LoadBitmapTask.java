@@ -9,8 +9,6 @@ import android.os.AsyncTask;
  */
 public class LoadBitmapTask extends AsyncTask<LoadBitmapTask.Parameters, Void, LoadBitmapTask.Parameters[]> {
 
-    private boolean complete;
-
     //TODO: Arguably these should scale with screen density.
     private static final int THUMBNAIL_WIDTH = 512;
     private static final int THUMBNAIL_HEIGHT = 512;
@@ -58,18 +56,13 @@ public class LoadBitmapTask extends AsyncTask<LoadBitmapTask.Parameters, Void, L
 
     @Override
     protected void onPostExecute(LoadBitmapTask.Parameters[] parameters) {
+        if (isCancelled()){
+            return;
+        }
         for (LoadBitmapTask.Parameters parameter : parameters) {
             parameter.callback.accept(parameter.bitmap);
             parameter.bitmap = null;
         }
-        complete = true;
-    }
-
-    /**
-     * @return whether the task has finished running
-     */
-    public boolean isComplete() {
-        return complete;
     }
 
     /**

@@ -50,8 +50,8 @@ public class GalleryViewModel extends AndroidViewModel {
         images.setSource(imageRepository.search(search));
     }
 
-    public void withExactImages(List<String> paths){
-        images.setSource(imageRepository.findExact(paths));
+    public void withExactImages(long[] ids){
+        images.setSource(imageRepository.findExact(ids));
     }
 
     public void setProgress(long count, long total,int stageResourceId){

@@ -35,18 +35,18 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
         public boolean areItemsTheSame(
                 @NonNull Image oldImage, @NonNull Image newImage) {
             // User properties may have changed if reloaded from the DB, but ID is fixed
-            return oldImage.getPath().equals(newImage.getPath());
+            return oldImage.getId() == newImage.getId();
         }
         @Override
         public boolean areContentsTheSame(
                 @NonNull Image oldImage, @NonNull Image newImage) {
-            // NOTE: if you use equals, your object must properly override Object#equals()
-            // Incorrectly returning false here will result in too many animations.
-            return oldImage.equals(newImage);
+            // for the gallery we only care about the path and title changing
+            return oldImage.getPath().equals(newImage.getPath()) && oldImage.getTitle().equals(newImage.getTitle());
         }
     };
 
     public GalleryRecyclerViewAdapter(GalleryViewModel viewModel, LifecycleOwner lifecycleOwner) {
+        setHasStableIds(true);
         this.viewModel = viewModel;
         this.lifecycleOwner = lifecycleOwner;
         this.viewModel.getImages().observe(lifecycleOwner, this::setImages);
@@ -55,6 +55,11 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     private void setImages(final List<Image> newImages) {
         //Here we diff the images for better performance over just replacing the list.
         differ.submitList(newImages);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return differ.getCurrentList().get(position).getId();
     }
 
     @NonNull
@@ -66,12 +71,12 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Image image = differ.getCurrentList().get(position);
-        holder.rebind(image, (view) -> this.showDetailView(view, image.getPath()));
+        holder.rebind(image, (view) -> this.showDetailView(view, image.getId()));
     }
 
-    private void showDetailView(View view, String path) {
+    private void showDetailView(View view, long id) {
         Bundle bundle = new Bundle();
-        bundle.putString("imagePath", path);
+        bundle.putLong("id", id);
         Navigation.findNavController(view).navigate(R.id.action_galleryFragment_to_detailsActivity, bundle);
     }
 
@@ -82,11 +87,6 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
 
     @Override
     public int getItemCount() {
-        return differ.getCurrentList().size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
         return differ.getCurrentList().size();
     }
 
@@ -112,7 +112,14 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
         }
 
         void rebind(Image image, View.OnClickListener onSelected) {
-            cleanup();
+            if(image == null){
+                return;
+            }
+            if(binding.getImage() != null && image.getId() == binding.getImage().getId()){
+                return;
+            }
+            bitmapLoader.cancel();
+            binding.setBitmap(null);
 
             bitmapLoader.setSourcePath(image.getBestThumbnailPath());
 
@@ -121,13 +128,9 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
             binding.executePendingBindings();
         }
 
-        void cleanup(){
+        void recycle() {
             bitmapLoader.cancel();
             binding.setBitmap(null);
-        }
-
-        void recycle() {
-            cleanup();
             binding.executePendingBindings();
         }
     }

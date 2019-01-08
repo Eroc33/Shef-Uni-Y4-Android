@@ -14,18 +14,6 @@ import android.widget.ImageView;
  */
 public class AsyncImageBindingAdapter {
 
-    //recycle old bitmaps
-    private static synchronized void recycleViewBitmap(ImageView view){
-        Drawable viewDrawable = view.getDrawable();
-        if(viewDrawable instanceof  BitmapDrawable) {
-            Bitmap old_bm = ((BitmapDrawable)viewDrawable).getBitmap();
-            view.setImageBitmap(null);
-            if (old_bm != null && !old_bm.isRecycled()) {
-                old_bm.recycle();
-            }
-        }
-    }
-
     /**
      * Attaches a bitmap to an ImageView with npe protection
      * @param view The view to add the bitmap to
@@ -33,10 +21,19 @@ public class AsyncImageBindingAdapter {
      */
     @BindingAdapter("app:imageAsync")
     public static void setImageAsync(ImageView view, Bitmap bm) {
-        //recycle old bitmaps
-        recycleViewBitmap(view);
+        Drawable viewDrawable = view.getDrawable();
+        Bitmap oldBm = null;
+        //maybe get old bitmap
+        if(viewDrawable instanceof  BitmapDrawable) {
+            oldBm = ((BitmapDrawable)viewDrawable).getBitmap();
+        }
 
-        //set new image
+        //set new bitmap
         view.setImageBitmap(bm);
+
+        //try recycle old bitmap
+        if (oldBm != null && !oldBm.isRecycled()) {
+            oldBm.recycle();
+        }
     }
 }

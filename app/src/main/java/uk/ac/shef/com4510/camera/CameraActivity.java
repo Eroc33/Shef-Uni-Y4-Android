@@ -2,12 +2,9 @@ package uk.ac.shef.com4510.camera;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,8 +26,6 @@ import uk.ac.shef.com4510.MainActivity;
 import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.SingleShotLocationProvider;
 import uk.ac.shef.com4510.support.MediaStoreHelper;
-
-import static android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "CameraActivity";
@@ -63,7 +58,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void openCamera() {
-        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
             File photoFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), newFilename());
             Uri photoURI = FileProvider.getUriForFile(this, "uk.ac.shef.com4510", photoFile);

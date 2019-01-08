@@ -35,7 +35,7 @@ public class EditDetailsActivity extends AppCompatActivity implements EditDetail
         binding = DataBindingUtil.setContentView(this,R.layout.edit_details_fragment);
 
         viewModel = ViewModelProviders.of(this).get(EditDetailsViewModel.class);
-        viewModel.setPath(getIntent().getStringExtra("imagePath"));
+        viewModel.setId(getIntent().getLongExtra("id", -1));
 
         binding.setLifecycleOwner(this);
         binding.setViewmodel(viewModel);

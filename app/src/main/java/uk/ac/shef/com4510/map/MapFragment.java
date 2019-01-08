@@ -63,11 +63,11 @@ public class MapFragment extends Fragment
         Context context = requireActivity().getApplicationContext();
 
         //db id of what was clicked
-        String path = cluster.getImage().getPath();
+        long id = cluster.getImage().getId();
 
         //launch details activity
         Intent startActivityIntent = new Intent(context, DetailsActivity.class);
-        startActivityIntent.putExtra("imagePath", path);
+        startActivityIntent.putExtra("id", id);
         context.startActivity(startActivityIntent);
 
         //we always handle it
@@ -86,14 +86,14 @@ public class MapFragment extends Fragment
         //Note: Ideally we would use streams here, but the minimum  specified android version does
         // not seem to support streams.
         ArrayList<Cluster> clusters = new ArrayList<>(cluster.getItems());
-        ArrayList<String> paths =  new ArrayList<String>(cluster.getSize());
-        for(Cluster c : clusters){
-            paths.add(c.image.getPath());
+        long[] ids =  new long[cluster.getSize()];
+        for(int i = 0; i< clusters.size(); i++){
+            ids[i] = clusters.get(i).image.getId();
         }
 
         Log.d(TAG,"navigating to gallery fragment with showExact");
         //launch gallery view with that set of images so the user can choose the one they want.
-        bundle.putStringArrayList("showExact", paths);
+        bundle.putLongArray("showExact", ids);
         Navigation.findNavController(getView()).navigate(R.id.action_mapFragment_to_galleryFragment, bundle);
 
         //we always handle it
