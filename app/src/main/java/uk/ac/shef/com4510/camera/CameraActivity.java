@@ -32,8 +32,13 @@ import uk.ac.shef.com4510.support.MediaStoreHelper;
 
 import static android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
+/**
+ * Handles the taking of new images using the device's camera.
+ */
+
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "CameraActivity";
+    // LOCATION_TIMEOUT is small here, since we don't want to wait ages to get a location before saving the image.
     private static final int LOCATION_TIMEOUT = 2500;
     private File currentCaptureFile;
 
@@ -43,6 +48,9 @@ public class CameraActivity extends AppCompatActivity {
         tryOpenCamera();
     }
 
+    /**
+     * Tries to open the camera. Handles missing permissions and devices lacking a camera.
+     */
     private void tryOpenCamera() {
         if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             if ((ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -62,6 +70,9 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Opens the camera, assuming the relevant permissions etc.
+     */
     private void openCamera() {
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         if (intent.resolveActivity(getPackageManager()) != null) {
@@ -112,6 +123,12 @@ public class CameraActivity extends AppCompatActivity {
         savePhoto(file,0.0,0.0);
     }
 
+    /**
+     * Saves a photo with a location.
+     * @param file The file to save the image to.
+     * @param lat Latitude.
+     * @param lng Longitude.
+     */
     private void savePhoto(File file, double lat, double lng) {
         Log.i(TAG,"save photo with latlng");
         try {
@@ -134,6 +151,7 @@ public class CameraActivity extends AppCompatActivity {
                     File file = currentCaptureFile;
                     currentCaptureFile = null;
 
+                    // Attempt to get a location for this image...
                     if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
                         SingleShotLocationProvider.requestSingleUpdate(getApplicationContext(),
