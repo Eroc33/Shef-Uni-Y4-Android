@@ -39,10 +39,10 @@ public class DetailsActivity extends AppCompatActivity implements OnMapReadyCall
         binding.setActions(this);
         binding.setLifecycleOwner(this);
 
-        //TODO: handle case that path is not set
-        String path = getIntent().getStringExtra("imagePath");
+        //TODO: handle case that id is not set
+        long id = getIntent().getLongExtra("id", -1);
         viewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
-        viewModel.setPath(path);
+        viewModel.setId(id);
         binding.setViewmodel(viewModel);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -82,7 +82,7 @@ public class DetailsActivity extends AppCompatActivity implements OnMapReadyCall
     public void edit() {
         ObserverUtils.observeOneshot(viewModel.getImage(),(image)->{
             Intent intent = new Intent(getApplicationContext(),EditDetailsActivity.class);
-            intent.putExtra("imagePath",image.getPath());
+            intent.putExtra("id",image.getId());
             startActivity(intent);
         });
     }

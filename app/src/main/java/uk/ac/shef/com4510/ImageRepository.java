@@ -25,8 +25,8 @@ public class ImageRepository {
         return app.getImageDb().imageDao().allImages();
     }
 
-    public LiveData<Image> getImage(String path) {
-        return app.getImageDb().imageDao().getImage(path);
+    public LiveData<Image> getImage(long id) {
+        return app.getImageDb().imageDao().getImage(id);
     }
 
     public LiveData<List<Image>> search(Search search) {
@@ -67,7 +67,7 @@ public class ImageRepository {
         AsyncTask.execute(()-> app.getImageDb().imageDao().updateSync(image));
     }
 
-    public LiveData<List<Image>> findExact(List<String> paths) {
-        return app.getImageDb().imageDao().findAll(paths);
+    public LiveData<List<Image>> findExact(long[] ids) {
+        return app.getImageDb().imageDao().findAll(ids);
     }
 }

@@ -2,12 +2,9 @@ package uk.ac.shef.com4510.camera;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,8 +27,6 @@ import uk.ac.shef.com4510.R;
 import uk.ac.shef.com4510.SingleShotLocationProvider;
 import uk.ac.shef.com4510.support.MediaStoreHelper;
 
-import static android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-
 /**
  * Handles the taking of new images using the device's camera.
  */
@@ -53,13 +48,11 @@ public class CameraActivity extends AppCompatActivity {
      */
     private void tryOpenCamera() {
         if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            if ((ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED) ||
-                    (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             != PackageManager.PERMISSION_GRANTED) ||
                     (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                             != PackageManager.PERMISSION_GRANTED)) {
-                requestPermissions(new String [] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION},
+                requestPermissions(new String [] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION},
                         PermissionRequestCode.CAMERA_STORAGE_LOCATION);
             } else {
                 openCamera();
@@ -74,7 +67,7 @@ public class CameraActivity extends AppCompatActivity {
      * Opens the camera, assuming the relevant permissions etc.
      */
     private void openCamera() {
-        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
             File photoFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), newFilename());
             Uri photoURI = FileProvider.getUriForFile(this, "uk.ac.shef.com4510", photoFile);

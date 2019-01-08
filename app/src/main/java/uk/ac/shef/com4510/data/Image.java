@@ -1,5 +1,6 @@
 package uk.ac.shef.com4510.data;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.database.Cursor;
@@ -30,7 +31,9 @@ public class Image {
             MediaStore.Images.Media._ID,
     };
     private static final String TAG = "Image";
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    private final long id;
+    @ColumnInfo(index = true)
     @NonNull
     private final String path;
     private final String thumbnailPath;
@@ -45,8 +48,9 @@ public class Image {
     private final double shutterSpeed;
     private final boolean hasExif;
 
-    public Image(@NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, long timestamp, int iso, double fstop
+    public Image(long id, @NonNull String path, String thumbnailPath, String title, double latitude, double longitude, String description, long timestamp, int iso, double fstop
     , double focalLength, double shutterSpeed, boolean hasExif) {
+        this.id = id;
         this.path = path;
         this.thumbnailPath = thumbnailPath;
         this.title = title;
@@ -68,6 +72,7 @@ public class Image {
      */
     public Image(Cursor cursor, String thumbnailPath) {
         this(
+                0,
                 cursor.getString(0),
                 thumbnailPath,
                 cursor.getString(2),
@@ -99,6 +104,7 @@ public class Image {
             double focalLength = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0.0);
             double shutterSpeed = exif.getAttributeDouble(ExifInterface.TAG_EXPOSURE_TIME,0);
             return new Image(
+                    id,
                     path,
                     thumbnailPath,
                     title,
@@ -119,6 +125,7 @@ public class Image {
 
     public Image withBasicInfo(String title, String description, Double latitude, Double longitude, long timestamp){
         return new Image(
+                id,
                 path,
                 thumbnailPath,
                 title,
@@ -253,5 +260,9 @@ public class Image {
             long denom = (long)(1/shutterSpeed);
             return String.format(Locale.getDefault(),"%d/%ds",numer,denom);
         }
+    }
+
+    public long getId() {
+        return id;
     }
 }

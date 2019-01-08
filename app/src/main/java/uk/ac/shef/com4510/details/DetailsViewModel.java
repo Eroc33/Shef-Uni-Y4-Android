@@ -48,7 +48,7 @@ public class DetailsViewModel extends AndroidViewModel {
         return bitmapLoader.bitmap;
     }
 
-    public void setPath(String path) {
-        imageSource.setSource(imageRepository.getImage(path));
+    public void setId(long id) {
+        imageSource.setSource(imageRepository.getImage(id));
     }
 }
