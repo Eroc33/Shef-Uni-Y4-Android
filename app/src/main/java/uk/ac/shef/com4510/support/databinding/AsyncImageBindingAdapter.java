@@ -27,15 +27,18 @@ public class AsyncImageBindingAdapter {
         }
     }
 
+    /**
+     * Like ("app:imageStatic") (@link{setImageStatic}) but will recycle bitmaps when the view is detached
+     * useful for recyclerviews
+     * @param view The view to add the bitmap to
+     * @param bm The bitmap
+     */
     @BindingAdapter("app:imageAsync")
     public static void setImageAsync(ImageView view, Bitmap bm) {
-        //recycle old bitmaps
-        recycleViewBitmap(view);
+        //same as setImageStatic
+        setImageStatic(view,bm);
 
-        //set new image
-        view.setImageBitmap(bm);
-
-        //ensure bitmaps are recycled on view detach
+        //but also ensure bitmaps are recycled on view detach
         view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
@@ -48,5 +51,19 @@ public class AsyncImageBindingAdapter {
                 recycleViewBitmap(view);
             }
         });
+    }
+
+    /**
+     * Attaches a bitmap to an ImageView with npe protection
+     * @param view The view to add the bitmap to
+     * @param bm The bitmap
+     */
+    @BindingAdapter("app:imageStatic")
+    public static void setImageStatic(ImageView view, Bitmap bm) {
+        //recycle old bitmaps
+        recycleViewBitmap(view);
+
+        //set new image
+        view.setImageBitmap(bm);
     }
 }
