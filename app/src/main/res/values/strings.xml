@@ -21,6 +21,11 @@
     <string name="iso">Iso: %s</string>
     <string name="focal_length">Focal Length: %s</string>
     <string name="fstop">Fstop: %s</string>
+    <string name="title_field">Title: %s</string>
+    <string name="description_field">Description: %s</string>
+    <string name="date_field">Date: %s</string>
+    <string name="add_description_hint">Add a description!</string>
+
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="date">Date</string>
