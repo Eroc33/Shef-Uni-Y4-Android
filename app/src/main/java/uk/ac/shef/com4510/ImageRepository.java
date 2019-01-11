@@ -20,6 +20,17 @@ public class ImageRepository {
     private static final String TAG = "ImageRepository";
     private final uk.ac.shef.com4510.Application app;
 
+    public void removeImage(Image image){
+        List<Image> images = new ArrayList<>();
+        images.add(image);
+        removeImages(images);
+    }
+
+    public void removeImages(List<Image> images){
+        //noinspection unchecked
+        new RemoveImagesTask(app.getImageDb().imageDao()).execute(images);
+    }
+
     private LiveData<List<Image>> filterAndQueueDeletions(LiveData<List<Image>> imageLiveData){
         MediatorLiveData<List<Image>> filteredLiveData = new MediatorLiveData<>();
         filteredLiveData.addSource(imageLiveData,(images)->{
@@ -30,8 +41,7 @@ public class ImageRepository {
                 }
             }
             images.removeAll(deleted);
-            //noinspection unchecked
-            new RemoveImagesTask(app.getImageDb().imageDao()).execute(deleted);
+            removeImages(deleted);
             filteredLiveData.setValue(images);
         });
         return filteredLiveData;

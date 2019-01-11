@@ -48,6 +48,7 @@ public class DetailsActivity extends AppCompatActivity implements OnMapReadyCall
         viewModel.getImage().observe(this,(image)->{
             if(!new File(image.getPath()).exists()){
                 Toast.makeText(this,R.string.image_was_deleted,Toast.LENGTH_SHORT).show();
+                viewModel.externallyDeleted();
                 finish();
             }
         });

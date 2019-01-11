@@ -51,4 +51,8 @@ public class DetailsViewModel extends AndroidViewModel {
     public void setId(long id) {
         imageSource.setSource(imageRepository.getImage(id));
     }
+
+    public void externallyDeleted() {
+        imageRepository.removeImage(image.getValue());
+    }
 }
