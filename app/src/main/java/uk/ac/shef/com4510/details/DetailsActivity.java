@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Locale;
 
@@ -43,6 +45,12 @@ public class DetailsActivity extends AppCompatActivity implements OnMapReadyCall
         long id = getIntent().getLongExtra("id", -1);
         viewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
         viewModel.setId(id);
+        viewModel.getImage().observe(this,(image)->{
+            if(!new File(image.getPath()).exists()){
+                Toast.makeText(this,R.string.image_was_deleted,Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
         binding.setViewmodel(viewModel);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()

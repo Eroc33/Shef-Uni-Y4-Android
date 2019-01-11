@@ -32,4 +32,5 @@
     <string name="start_date">Start date (inclusive)</string>
     <string name="end_date">End date (exclusive)</string>
     <string name="location_not_set">Location not set</string>
+    <string name="image_was_deleted">This image appears to have been deleted.</string>
 </resources>
