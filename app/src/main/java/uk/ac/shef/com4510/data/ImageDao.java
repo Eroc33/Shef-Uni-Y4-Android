@@ -2,6 +2,7 @@ package uk.ac.shef.com4510.data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
@@ -39,6 +40,9 @@ public abstract class ImageDao {
 
     @Update
     public abstract void updateSync(Image image);
+
+    @Delete
+    public abstract void removeSync(List<Image> images);
 
     @Query("SELECT * FROM image where id in (:ids)")
     public abstract LiveData<List<Image>> findAll(long[] ids);

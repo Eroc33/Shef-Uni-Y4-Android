@@ -2,19 +2,40 @@ package uk.ac.shef.com4510;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MediatorLiveData;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import uk.ac.shef.com4510.data.CalendarConverters;
 import uk.ac.shef.com4510.data.Image;
+import uk.ac.shef.com4510.data.ImageDao;
 import uk.ac.shef.com4510.search.Search;
 
 public class ImageRepository {
     private static final String TAG = "ImageRepository";
     private final uk.ac.shef.com4510.Application app;
+
+    private LiveData<List<Image>> filterAndQueueDeletions(LiveData<List<Image>> imageLiveData){
+        MediatorLiveData<List<Image>> filteredLiveData = new MediatorLiveData<>();
+        filteredLiveData.addSource(imageLiveData,(images)->{
+            List<Image> deleted = new ArrayList<>();
+            for (Image image : images){
+                if (!new File(image.getPath()).exists()){
+                    deleted.add(image);
+                }
+            }
+            images.removeAll(deleted);
+            //noinspection unchecked
+            new RemoveImagesTask(app.getImageDb().imageDao()).execute(deleted);
+            filteredLiveData.setValue(images);
+        });
+        return filteredLiveData;
+    }
 
 
     public ImageRepository(Application app) {
@@ -22,7 +43,7 @@ public class ImageRepository {
     }
 
     public LiveData<List<Image>> getAllImages() {
-        return app.getImageDb().imageDao().allImages();
+        return filterAndQueueDeletions(app.getImageDb().imageDao().allImages());
     }
 
     public LiveData<Image> getImage(long id) {
@@ -60,7 +81,7 @@ public class ImageRepository {
         endDate.set(Calendar.MILLISECOND,0);
 
         Log.d("ImageRepository", String.format("searching with title: `%s` and description: `%s`",title,description));
-        return app.getImageDb().imageDao().search(title, description, CalendarConverters.calendarToUnixTimestamp(startDate), CalendarConverters.calendarToUnixTimestamp(endDate));
+        return filterAndQueueDeletions(app.getImageDb().imageDao().search(title, description, CalendarConverters.calendarToUnixTimestamp(startDate), CalendarConverters.calendarToUnixTimestamp(endDate)));
     }
 
     public void update(Image image) {
@@ -68,6 +89,20 @@ public class ImageRepository {
     }
 
     public LiveData<List<Image>> findExact(long[] ids) {
-        return app.getImageDb().imageDao().findAll(ids);
+        return filterAndQueueDeletions(app.getImageDb().imageDao().findAll(ids));
+    }
+
+    private static class RemoveImagesTask extends AsyncTask<List<Image>, Void, Void> {
+        private ImageDao dao;
+
+        RemoveImagesTask(ImageDao dao) {
+            this.dao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final List<Image>... params) {
+            dao.removeSync(params[0]);
+            return null;
+        }
     }
 }
