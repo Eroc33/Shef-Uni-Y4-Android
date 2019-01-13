@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="uk.ac.shef.com4510">
+    package="uk.ac.shef.oak.com4510">
 
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".Application"
+        android:name="uk.ac.shef.oak.com4510.Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -21,7 +21,7 @@
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name="uk.ac.shef.oak.com4510.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,15 +29,15 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".details.DetailsActivity" />
-        <activity android:name=".camera.CameraActivity" />
-        <activity android:name=".details.EditDetailsActivity" />
+        <activity android:name="uk.ac.shef.oak.com4510.details.DetailsActivity" />
+        <activity android:name="uk.ac.shef.oak.com4510.camera.CameraActivity" />
+        <activity android:name="uk.ac.shef.oak.com4510.details.EditDetailsActivity" />
 
-        <service android:name=".ImageScannerService" />
+        <service android:name="uk.ac.shef.oak.com4510.ImageScannerService" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="uk.ac.shef.com4510"
+            android:authorities="uk.ac.shef.oak.com4510"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

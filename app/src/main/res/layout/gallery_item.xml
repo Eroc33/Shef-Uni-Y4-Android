@@ -12,7 +12,7 @@
 
         <variable
             name="image"
-            type="uk.ac.shef.com4510.data.Image" />
+            type="uk.ac.shef.oak.com4510.data.Image" />
 
         <variable
             name="selectedListener"

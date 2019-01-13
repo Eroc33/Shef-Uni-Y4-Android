@@ -5,11 +5,11 @@
     <data>
         <variable
             name="viewmodel"
-            type="uk.ac.shef.com4510.details.DetailsViewModel"/>
+            type="uk.ac.shef.oak.com4510.details.DetailsViewModel"/>
 
         <variable
             name="coordinateFormatter"
-            type="uk.ac.shef.com4510.support.CoordinateFormatter" />
+            type="uk.ac.shef.oak.com4510.support.CoordinateFormatter" />
 
         <variable
             name="dateFormatter"
@@ -17,7 +17,7 @@
 
         <variable
             name="actions"
-            type="uk.ac.shef.com4510.details.DetailViewActions"/>
+            type="uk.ac.shef.oak.com4510.details.DetailViewActions"/>
     </data>
 
     <android.support.constraint.ConstraintLayout

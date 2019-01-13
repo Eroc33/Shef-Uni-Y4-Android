@@ -7,13 +7,13 @@
         <import type="android.view.View"/>
         <variable
             name="adapterProvider"
-            type="uk.ac.shef.com4510.support.databinding.RecyclerViewAdapterProvider" />
+            type="uk.ac.shef.oak.com4510.support.databinding.RecyclerViewAdapterProvider" />
         <variable
             name="viewModel"
-            type="uk.ac.shef.com4510.gallery.GalleryViewModel" />
+            type="uk.ac.shef.oak.com4510.gallery.GalleryViewModel" />
         <variable
             name="actions"
-            type="uk.ac.shef.com4510.gallery.GalleryActions"/>
+            type="uk.ac.shef.oak.com4510.gallery.GalleryActions"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
